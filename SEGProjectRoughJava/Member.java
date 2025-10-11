@@ -5,9 +5,9 @@ public class Member extends User{
 
     public Member(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber){
         super(userName,userPassword);
-        firstName = userFirstName;
-        lastName = userLastName;
-        phoneNumber = userPhoneNumber;
+        this.firstName = userFirstName;
+        this.lastName = userLastName;
+        this.phoneNumber = userPhoneNumber;
     }
 
     public String getFirstName(){
