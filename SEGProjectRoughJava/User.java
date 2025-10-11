@@ -4,8 +4,8 @@ public class User {
     private String password;
 
     public User(String userName, String userPassword){
-        username = userName;
-        password = userPassword;
+        this.username = userName;
+        this.password = userPassword;
     }
 
     public boolean login(){
