@@ -3,7 +3,7 @@ public class Student extends Member{
 
     public Student(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userProgram){
         super(userName,userPassword, userLastName, userFirstName, userPhoneNumber);
-        program = userProgram;
+        this.program = userProgram;
     }
 
     public String getProgram(){
