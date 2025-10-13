@@ -35,6 +35,11 @@ public class SignUpActivity extends AppCompatActivity
             }
         });
 
+        buttonCreateAccount.setOnClickListener(v -> {
+            //create account logic
+        });
+
+
 
     }
 
