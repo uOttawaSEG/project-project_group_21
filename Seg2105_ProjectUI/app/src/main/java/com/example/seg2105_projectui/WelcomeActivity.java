@@ -22,6 +22,9 @@ public class    WelcomeActivity extends AppCompatActivity {
         String welcomeText = "Welcome, " + user.getFirstName() + "!";
         String detailsText = "You are logged in as a " + user.getUserName();
 
+        welcomeMessage.setText(welcomeText);
+        userDetails.setText(detailsText);
+
         //logout button functionality
         Button logoutButton = findViewById(R.id.buttonLogout);
 
