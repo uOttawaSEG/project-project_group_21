@@ -3,12 +3,13 @@ package com.example.seg2105_projectui;
 import android.os.Bundle;
 
 
-import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,12 +25,32 @@ public class MainActivity extends AppCompatActivity {
 
 
         loginButton.setOnClickListener(v -> {
+
+            String email = emailInput.getText().toString();
+            String password = passwordInput.getText().toString();
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(MainActivity.this, "email: " + email + " password: " + password, Toast.LENGTH_SHORT).show();
+                //connect to database
+                DatabaseHelper db = new DatabaseHelper(MainActivity.this);
+                User user = db.checkUser(email, password);
+                //check if user exists in database
+                if (user == null) {
+                    Toast.makeText(MainActivity.this, "User do not exist. pls sign up", Toast.LENGTH_SHORT).show();
+                } else {
+                    WelcomeActivity.onCreate(user);
+//                    setContentView(R.layout.activity_welcome);
+                }
+            }
             //Add backend later
         });
 
 
         signUpLink.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+
             startActivity(intent);
         });
     }

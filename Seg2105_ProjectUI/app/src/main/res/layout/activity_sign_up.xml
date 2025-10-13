@@ -25,18 +25,26 @@
 
             <RadioButton
                 android:id="@+id/radioStudent"
-                android:text="Student"
-                android:checked="true"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Student" />
 
             <RadioButton
                 android:id="@+id/radioTutor"
-                android:text="Tutor"
-                android:layout_marginStart="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:checked="false"
+                android:text="Tutor" />
         </RadioGroup>
+
+        <EditText
+            android:id="@+id/editEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Email Address" />
 
         <EditText
             android:id="@+id/editFirstName"
@@ -69,36 +77,43 @@
             android:layout_marginTop="8dp"/>
 
         <!-- Tutor-only section -->
-        <LinearLayout
-            android:id="@+id/tutorFields"
-            android:orientation="vertical"
-            android:visibility="gone"
+        <EditText
+            android:id="@+id/editProgram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:hint="Program of Study" />
+
+        <LinearLayout
+            android:id="@+id/tutorFields"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="invisible">
 
             <EditText
                 android:id="@+id/editDegree"
-                android:hint="Highest Degree"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:hint="Highest Degree" />
 
             <EditText
                 android:id="@+id/editCourse"
-                android:hint="Course Offered"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:hint="Course Offered" />
         </LinearLayout>
 
         <Button
             android:id="@+id/buttonCreateAccount"
-            android:text="Create Account"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:backgroundTint="@android:color/black"
+            android:text="Create Account"
             android:textColor="@android:color/white" />
 
 

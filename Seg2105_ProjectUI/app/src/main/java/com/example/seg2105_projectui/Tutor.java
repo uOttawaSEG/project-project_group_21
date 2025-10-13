@@ -1,3 +1,10 @@
+package com.example.seg2105_projectui;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.*;
+
 public class Tutor extends Member {
     private String highestDegree;
     private String[] coursesOffered;
