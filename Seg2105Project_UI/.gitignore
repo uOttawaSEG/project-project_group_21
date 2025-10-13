@@ -1,24 +1,33 @@
-# Built application files
-*.apk
-*.ap_
-*.aab
-
 # Gradle files
 .gradle/
 build/
 
-# Local configuration
+# Local configuration file (SDK path, etc)
 local.properties
 
-# IDEA
+# IntelliJ
+.idea/
 *.iml
-.idea/workspace.xml
-.idea/libraries
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/misc.xml
-captures/
 
-# Others
-.externalNativeBuild
-.cxx/
+# Generated files
+/captures/
+/.externalNativeBuild/
+/cxx/
+
+# Log files
+*.log
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (Firebase)
+google-services.json
+# Google Maps API key file
+apikeys.xml
+
+# Ignore Android Studio profiling files
+*.hprof
