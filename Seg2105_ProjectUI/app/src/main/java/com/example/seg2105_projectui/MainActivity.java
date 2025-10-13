@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
 
-            } else {
+            }
+            else {
                 //connect to database
                 DatabaseHelper db = new DatabaseHelper(MainActivity.this);
                 User user = db.checkUser(email, password);
@@ -39,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
                 if (user == null) {
                     Toast.makeText(MainActivity.this, "User do not exist. pls sign up", Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
-                    intent.putExtra("userInfo", user);
-                    startActivity(intent);
+                    Intent intent1 = new Intent(MainActivity.this, WelcomeActivity.class);
+                    intent1.putExtra("userInfo", user);
+                    startActivity(intent1);
                 }
             }
             //Add backend later

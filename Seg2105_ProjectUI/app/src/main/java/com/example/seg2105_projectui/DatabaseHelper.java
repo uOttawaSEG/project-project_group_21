@@ -11,7 +11,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "UserData.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table Name
     public static final String TABLE_USERS = "users";
@@ -41,13 +41,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_USERNAME + " TEXT NOT NULL,"
                 + COLUMN_PASSWORD + " TEXT NOT NULL,"
-                + COLUMN_FIRST_NAME + " TEXT NOT NULL,"
-                + COLUMN_LAST_NAME + " TEXT NOT NULL,"
-                + COLUMN_PHONE + " TEXT NOT NULL,"
+                + COLUMN_FIRST_NAME + " TEXT,"
+                + COLUMN_LAST_NAME + " TEXT,"
+                + COLUMN_PHONE + " TEXT,"
                 + COLUMN_ROLE + " TEXT NOT NULL,"
                 + COLUMN_DEGREE + " TEXT,"
                 + COLUMN_COURSES + " TEXT" + ")";
         db.execSQL(CREATE_USERS_TABLE);
+
+        //admin
+        ContentValues admin = new ContentValues();
+        admin.put(COLUMN_USERNAME, "admin");
+        admin.put(COLUMN_PASSWORD, "adminpassword");
+        admin.put(COLUMN_ROLE, "Admin");
+
+        db.insert(TABLE_USERS, null, admin);
     }
 
     // This is called when the database needs to be upgraded.
@@ -114,7 +122,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_ID,
                 COLUMN_FIRST_NAME,
                 COLUMN_LAST_NAME,
-                COLUMN_ROLE,
+                COLUMN_PHONE,
+                COLUMN_ROLE
 
         };
 
@@ -131,11 +140,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
-            String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
             String role = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
 
-            member = new Member(username, password, firstName, lastName, role);
+            if (role.equals("Admin")){
+                member = new Member(username, password, "", "", "", role);
+            }
+            else{
+                String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                String phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
+
+                member = new Member(username, password, firstName, lastName, phoneNumber, role);
+            }
         }
         if (cursor != null) {
             cursor.close();

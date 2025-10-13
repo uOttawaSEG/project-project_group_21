@@ -10,11 +10,14 @@ public class Member extends User{
     private String lastName;
     private String phoneNumber;
 
-    public Member(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber){
+    private String userRole;
+
+    public Member(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole){
         super(userName,userPassword);
         this.firstName = userFirstName;
         this.lastName = userLastName;
         this.phoneNumber = userPhoneNumber;
+        this.userRole = userRole;
     }
 
     public String getFirstName(){
@@ -28,4 +31,6 @@ public class Member extends User{
     public String getPhoneNumber(){
         return phoneNumber;
     }
+
+    public String getUserRole() { return userRole; }
 }

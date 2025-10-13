@@ -8,8 +8,8 @@ import android.widget.*;
 public class Student extends Member{
     private String program;
 
-    public Student(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userProgram){
-        super(userName,userPassword, userLastName, userFirstName, userPhoneNumber);
+    public Student(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole, String userProgram){
+        super(userName,userPassword, userLastName, userFirstName, userPhoneNumber, userRole);
         this.program = userProgram;
     }
 

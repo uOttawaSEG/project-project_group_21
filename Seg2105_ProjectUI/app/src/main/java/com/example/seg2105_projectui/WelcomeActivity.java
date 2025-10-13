@@ -14,13 +14,13 @@ public class    WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         Intent intent = getIntent();
-        User user = (User) getIntent().getSerializableExtra("userInfo");
+        Member user = (Member) getIntent().getSerializableExtra("userInfo");
 
         TextView welcomeMessage = findViewById(R.id.welcomeMessage);
         TextView userDetails = findViewById(R.id.userDetails);
 
         String welcomeText = "Welcome, " + user.getFirstName() + "!";
-        String detailsText = "You are logged in as a " + user.getUserName();
+        String detailsText = "You are logged in as a " + user.getUserRole();
 
         welcomeMessage.setText(welcomeText);
         userDetails.setText(detailsText);

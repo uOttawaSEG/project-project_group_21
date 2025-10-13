@@ -76,7 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
             String[] coursesOffered = coursesText.split(",");
-            Tutor newTutor = new Tutor(emailAddress, password, lastName, firstName, phone, degree, coursesOffered);
+            Tutor newTutor = new Tutor(emailAddress, password, lastName, firstName, phone, "Tutor", degree, coursesOffered);
 
             Toast.makeText(this, "Tutor account for " + newTutor.getFirstName() + " created!", Toast.LENGTH_LONG).show();
             // newTutor.registerUser();
@@ -84,7 +84,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         } else if (selectedRoleId == R.id.radioStudent) {
             String program = editProgram.getText().toString().trim();
-            Student newStudent = new Student(emailAddress, password, lastName, firstName, phone, program);
+            Student newStudent = new Student(emailAddress, password, lastName, firstName, phone, "Student", program);
             // --- Logic for creating a Student ---
             // Assuming you have a Student class that also extends Member
             // Student newStudent = new Student(username, password, lastName, firstName, phone);

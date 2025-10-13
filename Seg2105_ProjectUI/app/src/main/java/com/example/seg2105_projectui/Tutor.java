@@ -9,8 +9,8 @@ public class Tutor extends Member {
     private String highestDegree;
     private String[] coursesOffered;
 
-    public Tutor(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userHighestDegree, String[] userCoursesOffered){
-        super(userName,userPassword, userLastName, userFirstName, userPhoneNumber);
+    public Tutor(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole, String userHighestDegree, String[] userCoursesOffered){
+        super(userName,userPassword, userLastName, userFirstName, userPhoneNumber, userRole);
         highestDegree = userHighestDegree;
         coursesOffered = userCoursesOffered;
     }
