@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(MainActivity.this, "email: " + email + " password: " + password, Toast.LENGTH_SHORT).show();
                 //connect to database
                 DatabaseHelper db = new DatabaseHelper(MainActivity.this);
                 User user = db.checkUser(email, password);
