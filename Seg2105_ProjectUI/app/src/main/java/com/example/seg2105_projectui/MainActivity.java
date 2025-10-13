@@ -39,8 +39,9 @@ public class MainActivity extends AppCompatActivity {
                 if (user == null) {
                     Toast.makeText(MainActivity.this, "User do not exist. pls sign up", Toast.LENGTH_SHORT).show();
                 } else {
-                    WelcomeActivity.onCreate(user);
-//                    setContentView(R.layout.activity_welcome);
+                    Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
+                    intent.putExtra("userInfo", user);
+                    startActivity(intent);
                 }
             }
             //Add backend later

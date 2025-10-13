@@ -2,32 +2,33 @@ package com.example.seg2105_projectui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class    WelcomeActivity extends AppCompatActivity {
 
-    private TextView welcomeMessage, userDetails;
-
     // @Override
-    public static void onCreate(User user) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_welcome);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome);
 
-//        welcomeMessage = findViewById(R.id.welcomeMessage);
-//        userDetails = findViewById(R.id.userDetails);
+        Intent intent = getIntent();
+        User user = (User) getIntent().getSerializableExtra("userInfo");
 
-//        Intent intent = getIntent();
-        String firstName = null;
-        String role = null;
-        if (user != null) {
-        System.out.println(user.getFirstName());
-        System.out.println(user);
-//            role = user.getRole();
-        }
-//        if (intent != null && intent.getExtras() != null) {
-//            firstName = intent.getExtras().getString("USER_FIRST_NAME");
-//            role = intent.getExtras().getString("USER_ROLE");
-//        }
+        TextView welcomeMessage = findViewById(R.id.welcomeMessage);
+        TextView userDetails = findViewById(R.id.userDetails);
+
+        String welcomeText = "Welcome, " + user.getFirstName() + "!";
+        String detailsText = "You are logged in as a " + user.getUserName();
+
+        //logout button functionality
+        Button logoutButton = findViewById(R.id.buttonLogout);
+
+        logoutButton.setOnClickListener(v -> {
+            Intent intent1 = new Intent(WelcomeActivity.this, MainActivity.class);
+            startActivity(intent1);
+            finish();
+        });
     }
 }

@@ -2,6 +2,7 @@ package com.example.seg2105_projectui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -95,9 +96,9 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         // After successfully creating account, navigate to another screen
-        // Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-        // startActivity(intent);
-        // finish();
+        Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 

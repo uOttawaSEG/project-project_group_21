@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     
     private String username;
     private String password;
