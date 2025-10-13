@@ -78,9 +78,17 @@ public class SignUpActivity extends AppCompatActivity {
             String[] coursesOffered = coursesText.split(",");
             Tutor newTutor = new Tutor(emailAddress, password, lastName, firstName, phone, "Tutor", degree, coursesOffered);
 
-            Toast.makeText(this, "Tutor account for " + newTutor.getFirstName() + " created!", Toast.LENGTH_LONG).show();
-            // newTutor.registerUser();
-            dbHelper.addTutor(newTutor);
+            DatabaseHelper db = new DatabaseHelper(SignUpActivity.this);
+            User user = db.checkUser(newTutor.getUserName(), newTutor.getUserPassword());
+            //check if user exists in database
+            if (user != null) {
+                Toast.makeText(SignUpActivity.this, "Account exists. Please log in", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "Tutor account for " + newTutor.getFirstName() + " created!", Toast.LENGTH_LONG).show();
+                // newTutor.registerUser();
+                dbHelper.addTutor(newTutor);
+            }
 
         } else if (selectedRoleId == R.id.radioStudent) {
             String program = editProgram.getText().toString().trim();
@@ -88,8 +96,17 @@ public class SignUpActivity extends AppCompatActivity {
             // --- Logic for creating a Student ---
             // Assuming you have a Student class that also extends Member
             // Student newStudent = new Student(username, password, lastName, firstName, phone);
-            Toast.makeText(this, "Student account created!", Toast.LENGTH_LONG).show();
-            dbHelper.addStudent(newStudent);
+
+            DatabaseHelper db = new DatabaseHelper(SignUpActivity.this);
+            User user = db.checkUser(newStudent.getUserName(), newStudent.getUserPassword());
+            //check if user exists in database
+            if (user != null) {
+                Toast.makeText(SignUpActivity.this, "Account exists. Please log in", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "Student account created!", Toast.LENGTH_LONG).show();
+                dbHelper.addStudent(newStudent);
+            }
         }
         else {
             Toast.makeText(this, "Please select a role (Tutor or Student)", Toast.LENGTH_SHORT).show();

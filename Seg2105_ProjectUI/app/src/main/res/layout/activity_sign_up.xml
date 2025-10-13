@@ -48,17 +48,21 @@
 
         <EditText
             android:id="@+id/editFirstName"
-            android:hint="First Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+            android:hint="First Name"
+            android:inputType="textCapSentences" />
 
         <EditText
             android:id="@+id/editLastName"
-            android:hint="Last Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+            android:hint="Last Name"
+            android:inputType="textCapSentences" />
 
         <EditText
             android:id="@+id/editPassword"
@@ -82,7 +86,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Program of Study" />
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+            android:hint="Program of Study"
+            android:inputType="textCapSentences" />
 
         <LinearLayout
             android:id="@+id/tutorFields"
@@ -97,7 +103,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="Highest Degree" />
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
+                android:hint="Highest Degree"
+                android:inputType="textCapSentences" />
 
             <EditText
                 android:id="@+id/editCourse"
