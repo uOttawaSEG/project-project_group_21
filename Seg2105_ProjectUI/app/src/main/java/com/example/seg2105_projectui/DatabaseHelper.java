@@ -143,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String role = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
 
             if (role.equals("Admin")){
-                member = new Member(username, password, "", "", "", role);
+                member = new Member(username, password, "", "Admin", "", "System Admin");
             }
             else{
                 String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
