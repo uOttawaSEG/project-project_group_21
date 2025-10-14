@@ -150,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
                 String phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
 
-                member = new Member(username, password, firstName, lastName, phoneNumber, role);
+                member = new Member(username, password, lastName, firstName, phoneNumber, role);
             }
         }
         if (cursor != null) {
