@@ -11,4 +11,12 @@ public class Admin extends User{
         super(userName,userPassword);
     }
     //Admin will eventually have to log in
+
+    public approveMember(Member user){
+        user.setAccountStatus(1);
+    }
+
+    public rejectMember(Member user){
+        user.setAccountStatus(2);
+    }
 }

@@ -12,12 +12,18 @@ public class Member extends User{
 
     private String userRole;
 
+    //0 = pending
+    //1 = approved
+    //2 = rejected
+    private int accountStatus;
+
     public Member(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole){
         super(userName,userPassword);
         this.firstName = userFirstName;
         this.lastName = userLastName;
         this.phoneNumber = userPhoneNumber;
         this.userRole = userRole;
+        this.accountStatus = 0;
     }
 
     public String getFirstName(){
@@ -33,4 +39,8 @@ public class Member extends User{
     }
 
     public String getUserRole() { return userRole; }
+    
+    public int getAccountStatus() {
+        return accountStatus;
+    }
 }
