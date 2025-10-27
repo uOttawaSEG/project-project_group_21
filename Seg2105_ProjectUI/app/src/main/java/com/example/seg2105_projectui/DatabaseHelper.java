@@ -166,6 +166,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return member;
     }
 
+    public void approveUser(String username){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ACCOUNT_STATUS, 1)
+
+        db.update(
+                TABLE_USERS,
+                values,
+                COLUMN_USERNAME + " = ?", //parameter placeholder?
+                new String[]{username}
+        );
+        db.close();
+    }
+
+    public void rejectUser(String username){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ACCOUNT_STATUS, 2)
+
+        db.update(
+                TABLE_USERS,
+                values,
+                COLUMN_USERNAME + " = ?", //parameter placeholder?
+                new String[]{username}
+        );
+        db.close();
+    }
+
+    
+
 }
 
 
