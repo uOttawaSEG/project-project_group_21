@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_USERS = "users";
 
     // Users Table Columns
-    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_ID = "id";//i am unsure as to what id
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password"; // In a real app, HASH THIS!
     public static final String COLUMN_FIRST_NAME = "first_name";
@@ -33,6 +33,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Tutor-specific columns (can be null for students)
     public static final String COLUMN_DEGREE = "degree";
     public static final String COLUMN_COURSES = "courses"; // Stored as a comma-separated string
+
+    //Student specifc
+    public static final String COLUMN_PROGRAM = "program"; // Stored as a comma-separated string
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -52,6 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ROLE + " TEXT NOT NULL,"
                 + COLUMN_DEGREE + " TEXT,"
                 + COLUMN_COURSES + " TEXT,"
+                + COLUMN_PROGRAM + " TEXT,"
                 + COLUMN_ACCOUNT_STATUS + " INTEGER DEFAULT 0" + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
@@ -113,6 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LAST_NAME, student.getLastName());
         values.put(COLUMN_PHONE, student.getPhoneNumber());
         values.put(COLUMN_ROLE, "Student");
+        values.put(COLUMN_PROGRAM, student.getProgram());
         values.put(COLUMN_ACCOUNT_STATUS, 0); //0 by default
 
 
@@ -208,6 +213,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 COLUMN_LAST_NAME + " ACS");
         
+    }
+
+    public List<Member> getUsersByStatusList(int status){
+        List<Member> list = new ArrayList<>();
+        Cursor cursor = getUsersByStatus(status);
+
+        if (cursor != null && cursor.moveToFirst()){
+            do { 
+                String userName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String userPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+                String userLastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                String userFirstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String userPhoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
+                String userRole = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
+
+                Member member = new Member( userName, userPassword,  userLastName, userFirstName, userPhoneNumber, userRole);
+
+                if ("Tutor".equals(member.getUserRole())){
+                    member.highestDegree = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEGREE));
+                    member.coursesOffered = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSES));
+                }
+                if ("Student".equals(member.getUserRole())){
+                    member.program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+                }
+
+                list.add(member);
+                
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+        return list;
     }
     
 
