@@ -169,7 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void approveUser(String username){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_ACCOUNT_STATUS, 1)
+        values.put(COLUMN_ACCOUNT_STATUS, 1);
 
         db.update(
                 TABLE_USERS,
@@ -183,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void rejectUser(String username){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_ACCOUNT_STATUS, 2)
+        values.put(COLUMN_ACCOUNT_STATUS, 2);
 
         db.update(
                 TABLE_USERS,
@@ -194,6 +194,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public Cursor getUsersByStatus(int status){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(TABLE_USERS,
+                null,
+                COLUMN_ACCOUNT_STATUS + " = ?",
+                new String[]{String.valueOf(status)},
+                null,
+                null,
+                COLUMN_LAST_NAME + " ACS");
+        
+
+    }
     
 
 }
