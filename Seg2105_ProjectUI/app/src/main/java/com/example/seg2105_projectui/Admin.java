@@ -13,10 +13,11 @@ import android.widget.*;
 
 
 public class Admin extends User{
-
+    private Member currentFile;
 
     public Admin(String userName, String userPassword){
         super(userName,userPassword);
+        this.currentFile = null;
     }
     //Admin will eventually have to log in
 
@@ -31,12 +32,12 @@ public class Admin extends User{
     }
 
 
-    public Member getNextRejected(){
-        return null;
+    public void getNextRejected(){
+        this.currentFile = null;
     }
 
 
-    public Member getNextPending(){
-        return null;
+    public void getNextPending(){
+        this.currentFile = null;
     }
 }
