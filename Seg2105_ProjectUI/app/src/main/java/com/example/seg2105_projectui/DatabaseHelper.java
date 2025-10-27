@@ -1,10 +1,14 @@
 package com.example.seg2105_projectui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.example.seg2105_projectui.Member;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -204,7 +208,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 COLUMN_LAST_NAME + " ACS");
         
-
     }
     
 
