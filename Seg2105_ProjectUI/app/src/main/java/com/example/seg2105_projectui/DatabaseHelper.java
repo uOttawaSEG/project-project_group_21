@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LAST_NAME = "last_name";
     public static final String COLUMN_PHONE = "phone_number";
     public static final String COLUMN_ROLE = "role"; // "Student" or "Tutor"
+    public static final String COLUMN_ACCOUNT_STATUS = "account_status";
 
     // Tutor-specific columns (can be null for students)
     public static final String COLUMN_DEGREE = "degree";
@@ -46,7 +47,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_PHONE + " TEXT,"
                 + COLUMN_ROLE + " TEXT NOT NULL,"
                 + COLUMN_DEGREE + " TEXT,"
-                + COLUMN_COURSES + " TEXT" + ")";
+                + COLUMN_COURSES + " TEXT,"
+                + COLUMN_ACCOUNT_STATUS + " INTEGER DEFAULT 0" + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
         //admin
@@ -82,6 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PHONE, tutor.getPhoneNumber());
         values.put(COLUMN_ROLE, "Tutor"); // Set the role
         values.put(COLUMN_DEGREE, tutor.getHighestDegree());
+        values.put(COLUMN_ACCOUNT_STATUS, 0); //0 by default
 
         // Convert the string array of courses to a single comma-separated string
         String coursesStr = String.join(",", tutor.getCoursesOffered());
@@ -106,6 +109,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LAST_NAME, student.getLastName());
         values.put(COLUMN_PHONE, student.getPhoneNumber());
         values.put(COLUMN_ROLE, "Student");
+        values.put(COLUMN_ACCOUNT_STATUS, 0); //0 by default
+
 
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
