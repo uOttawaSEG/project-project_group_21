@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.seg2105_projectui.Member;
+import com.example.seg2105_projectui.Tutor;
+import com.example.seg2105_projectui.Student;
+
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -211,7 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(status)},
                 null,
                 null,
-                COLUMN_LAST_NAME + " ACS");
+                COLUMN_LAST_NAME + " ASC");
         
     }
 
@@ -228,18 +231,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String userPhoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
                 String userRole = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
 
-                Member member = new Member( userName, userPassword,  userLastName, userFirstName, userPhoneNumber, userRole);
+                if ("Tutor".equals(userRole)){
 
-                if ("Tutor".equals(member.getUserRole())){
-                    member.highestDegree = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEGREE));
-                    member.coursesOffered = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSES));
-                }
-                if ("Student".equals(member.getUserRole())){
-                    member.program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+                    String highestDegree = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEGREE));
+                    String courses = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSES));
+                    String[] courseOffered;
+
+                    if (courses != null && !courses.isEmpty()){
+                        courseOffered = courses.split(",");
+                    }else{
+                        courseOffered = null;//might need changing
+                    }//also im not sure if admin would ever show up in this so i didn't do anything about that
+
+                    Tutor tutor = new Tutor(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole, highestDegree, courseOffered);
+                    list.add(tutor);
+
+                }else if ("Student".equals(userRole)){
+
+                    String program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+
+                    Student student = new Student(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole, program);
+                    list.add(student);
+
                 }
 
-                list.add(member);
-                
             } while (cursor.moveToNext());
 
             cursor.close();
