@@ -26,7 +26,7 @@ public class    WelcomeActivity extends AppCompatActivity {
         userDetails.setText(detailsText);
 
         //logout button functionality
-        Button logoutButton = findViewById(R.id.buttonLogout);
+        Button logoutButton = findViewById(R.id.buttonViewPending);
 
         logoutButton.setOnClickListener(v -> {
             Intent intent1 = new Intent(WelcomeActivity.this, MainActivity.class);

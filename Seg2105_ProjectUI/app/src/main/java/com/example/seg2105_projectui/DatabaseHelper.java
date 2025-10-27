@@ -1,11 +1,18 @@
 package com.example.seg2105_projectui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.example.seg2105_projectui.Member;
+import com.example.seg2105_projectui.Tutor;
+import com.example.seg2105_projectui.Student;
+
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -17,17 +24,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_USERS = "users";
 
     // Users Table Columns
-    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_ID = "id";//i am unsure as to what id
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password"; // In a real app, HASH THIS!
     public static final String COLUMN_FIRST_NAME = "first_name";
     public static final String COLUMN_LAST_NAME = "last_name";
     public static final String COLUMN_PHONE = "phone_number";
     public static final String COLUMN_ROLE = "role"; // "Student" or "Tutor"
+    public static final String COLUMN_ACCOUNT_STATUS = "account_status";
 
     // Tutor-specific columns (can be null for students)
     public static final String COLUMN_DEGREE = "degree";
     public static final String COLUMN_COURSES = "courses"; // Stored as a comma-separated string
+
+    //Student specifc
+    public static final String COLUMN_PROGRAM = "program"; // Stored as a comma-separated string
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,7 +57,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_PHONE + " TEXT,"
                 + COLUMN_ROLE + " TEXT NOT NULL,"
                 + COLUMN_DEGREE + " TEXT,"
-                + COLUMN_COURSES + " TEXT" + ")";
+                + COLUMN_COURSES + " TEXT,"
+                + COLUMN_PROGRAM + " TEXT,"
+                + COLUMN_ACCOUNT_STATUS + " INTEGER DEFAULT 0" + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
         //admin
@@ -82,6 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PHONE, tutor.getPhoneNumber());
         values.put(COLUMN_ROLE, "Tutor"); // Set the role
         values.put(COLUMN_DEGREE, tutor.getHighestDegree());
+        values.put(COLUMN_ACCOUNT_STATUS, 0); //0 by default
 
         // Convert the string array of courses to a single comma-separated string
         String coursesStr = String.join(",", tutor.getCoursesOffered());
@@ -106,6 +120,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_LAST_NAME, student.getLastName());
         values.put(COLUMN_PHONE, student.getPhoneNumber());
         values.put(COLUMN_ROLE, "Student");
+        values.put(COLUMN_PROGRAM, student.getProgram());
+        values.put(COLUMN_ACCOUNT_STATUS, 0); //0 by default
+
 
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
@@ -160,6 +177,91 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return member;
     }
+
+    public void approveUser(String username){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ACCOUNT_STATUS, 1);
+
+        db.update(
+                TABLE_USERS,
+                values,
+                COLUMN_USERNAME + " = ?", //parameter placeholder?
+                new String[]{username}
+        );
+        db.close();
+    }
+
+    public void rejectUser(String username){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ACCOUNT_STATUS, 2);
+
+        db.update(
+                TABLE_USERS,
+                values,
+                COLUMN_USERNAME + " = ?", //parameter placeholder?
+                new String[]{username}
+        );
+        db.close();
+    }
+
+    public Cursor getUsersByStatus(int status){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(TABLE_USERS,
+                null,
+                COLUMN_ACCOUNT_STATUS + " = ?",
+                new String[]{String.valueOf(status)},
+                null,
+                null,
+                COLUMN_LAST_NAME + " ASC");
+        
+    }
+
+    public List<Member> getUsersByStatusList(int status){
+        List<Member> list = new ArrayList<>();
+        Cursor cursor = getUsersByStatus(status);
+
+        if (cursor != null && cursor.moveToFirst()){
+            do { 
+                String userName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String userPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+                String userLastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                String userFirstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String userPhoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
+                String userRole = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
+
+                if ("Tutor".equals(userRole)){
+
+                    String highestDegree = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEGREE));
+                    String courses = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSES));
+                    String[] courseOffered;
+
+                    if (courses != null && !courses.isEmpty()){
+                        courseOffered = courses.split(",");
+                    }else{
+                        courseOffered = null;//might need changing
+                    }//also im not sure if admin would ever show up in this so i didn't do anything about that
+
+                    Tutor tutor = new Tutor(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole, highestDegree, courseOffered);
+                    list.add(tutor);
+
+                }else if ("Student".equals(userRole)){
+
+                    String program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+
+                    Student student = new Student(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole, program);
+                    list.add(student);
+
+                }
+
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+        return list;
+    }
+    
 
 }
 
