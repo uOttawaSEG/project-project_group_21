@@ -23,12 +23,12 @@ public class Admin extends User{
 
 
     public void approveMember(Member user){
-        user.setAccountStatus(1);
+        //user.setAccountStatus(1);
     }
 
 
     public void rejectMember(Member user){
-        user.setAccountStatus(2);
+        //user.setAccountStatus(2);
     }
 
 

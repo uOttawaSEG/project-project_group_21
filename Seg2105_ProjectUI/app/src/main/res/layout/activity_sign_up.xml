@@ -11,84 +11,129 @@
 
         <TextView
             android:text="Create Account"
-            android:textSize="24sp"
+            android:textSize="26sp"
+            android:textStyle="bold"
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="Role"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <RadioGroup
             android:id="@+id/roleGroup"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
 
             <RadioButton
                 android:id="@+id/radioStudent"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="Student" />
 
             <RadioButton
                 android:id="@+id/radioTutor"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:checked="false"
                 android:text="Tutor" />
         </RadioGroup>
 
+        <TextView
+            android:text="Email Address"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         <EditText
             android:id="@+id/editEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Email Address" />
+            android:layout_marginTop="4dp"
+            android:hint="Enter email address" />
 
+        <TextView
+            android:text="First Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
         <EditText
             android:id="@+id/editFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
-            android:hint="First Name"
-            android:inputType="textCapSentences" />
+            android:layout_marginTop="4dp"
+            android:hint="Enter first name"
+            android:inputType="textCapWords" />
 
+        <TextView
+            android:text="Last Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
         <EditText
             android:id="@+id/editLastName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
-            android:hint="Last Name"
-            android:inputType="textCapSentences" />
+            android:layout_marginTop="4dp"
+            android:hint="Enter last name"
+            android:inputType="textCapWords" />
 
+        <TextView
+            android:text="Password"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
         <EditText
             android:id="@+id/editPassword"
-            android:hint="Password"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="4dp"
+            android:hint="Enter password"
+            android:inputType="textPassword" />
 
+        <TextView
+            android:text="Phone Number"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
         <EditText
             android:id="@+id/editPhone"
-            android:hint="Phone Number"
-            android:inputType="phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="4dp"
+            android:hint="Enter phone number"
+            android:inputType="phone" />
 
-        <!-- Tutor-only section -->
+        <TextView
+            android:text="Program of Study"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
         <EditText
             android:id="@+id/editProgram"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
-            android:hint="Program of Study"
-            android:inputType="textCapSentences" />
+            android:layout_marginTop="4dp"
+            android:hint="Enter program"
+            android:inputType="textCapWords" />
 
         <LinearLayout
             android:id="@+id/tutorFields"
@@ -98,21 +143,33 @@
             android:orientation="vertical"
             android:visibility="invisible">
 
+            <TextView
+                android:text="Highest Degree"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
             <EditText
                 android:id="@+id/editDegree"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
-                android:hint="Highest Degree"
-                android:inputType="textCapSentences" />
+                android:layout_marginTop="4dp"
+                android:hint="Enter degree"
+                android:inputType="textCapWords" />
 
+            <TextView
+                android:text="Course Offered"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"/>
             <EditText
                 android:id="@+id/editCourse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="Course Offered" />
+                android:layout_marginTop="4dp"
+                android:hint="Enter courses (comma separated)" />
         </LinearLayout>
 
         <Button
@@ -123,7 +180,5 @@
             android:backgroundTint="@android:color/black"
             android:text="Create Account"
             android:textColor="@android:color/white" />
-
-
     </LinearLayout>
 </ScrollView>
