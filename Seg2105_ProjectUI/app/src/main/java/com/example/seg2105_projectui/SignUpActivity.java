@@ -47,7 +47,6 @@ public class SignUpActivity extends AppCompatActivity {
             //create account logic
         });
     }
-
     private void createAccount() {
 
         String firstName = editFirstName.getText().toString().trim();
@@ -56,17 +55,22 @@ public class SignUpActivity extends AppCompatActivity {
         String phone = editPhone.getText().toString().trim();
         String emailAddress = editEmailAddress.getText().toString().trim();
 
-        if (firstName.isEmpty() || lastName.isEmpty() || password.isEmpty() || phone.isEmpty()) {
+        // FIX #4: Added emailAddress.isEmpty() to the check
+        if (firstName.isEmpty() || lastName.isEmpty() || password.isEmpty() || phone.isEmpty() || emailAddress.isEmpty()) {
             Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 3. Determine the selected role
+        // FIX #1: Use the new isUserExists method to check if the email is already taken.
+        // FIX #3: Use the single dbHelper instance.
+        if (dbHelper.isUserExists(emailAddress)) {
+            Toast.makeText(this, "An account with this email already exists.", Toast.LENGTH_SHORT).show();
+            return; // Stop the process if user exists
+        }
+
         int selectedRoleId = roleGroup.getCheckedRadioButtonId();
-        long insertResult = -1;
 
         if (selectedRoleId == R.id.radioTutor) {
-            // --- Logic for creating a Tutor ---
             String degree = editDegree.getText().toString().trim();
             String coursesText = editCourse.getText().toString().trim();
 
@@ -78,45 +82,39 @@ public class SignUpActivity extends AppCompatActivity {
             String[] coursesOffered = coursesText.split(",");
             Tutor newTutor = new Tutor(emailAddress, password, lastName, firstName, phone, "Tutor", degree, coursesOffered);
 
-            DatabaseHelper db = new DatabaseHelper(SignUpActivity.this);
-            User user = db.checkUser(newTutor.getUserName(), newTutor.getUserPassword());
-            //check if user exists in database
-            if (user != null) {
-                Toast.makeText(SignUpActivity.this, "Account exists. Please log in", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                Toast.makeText(this, "Tutor account for " + newTutor.getFirstName() + " created!", Toast.LENGTH_LONG).show();
-                // newTutor.registerUser();
-                dbHelper.addTutor(newTutor);
+            boolean isAdded = dbHelper.addTutor(newTutor);
+
+            if (isAdded) {
+                Toast.makeText(this, "Tutor account created! Please wait for approval.", Toast.LENGTH_LONG).show();
+                // FIX #2: Navigate ONLY on success.
+                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
             }
 
         } else if (selectedRoleId == R.id.radioStudent) {
             String program = editProgram.getText().toString().trim();
             Student newStudent = new Student(emailAddress, password, lastName, firstName, phone, "Student", program);
-            // --- Logic for creating a Student ---
-            // Assuming you have a Student class that also extends Member
-            // Student newStudent = new Student(username, password, lastName, firstName, phone);
 
-            DatabaseHelper db = new DatabaseHelper(SignUpActivity.this);
-            User user = db.checkUser(newStudent.getUserName(), newStudent.getUserPassword());
-            //check if user exists in database
-            if (user != null) {
-                Toast.makeText(SignUpActivity.this, "Account exists. Please log in", Toast.LENGTH_SHORT).show();
+            boolean isAdded = dbHelper.addStudent(newStudent);
+
+            if (isAdded) {
+                Toast.makeText(this, "Student account created! Please wait for approval.", Toast.LENGTH_LONG).show();
+                // FIX #2: Navigate ONLY on success.
+                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
             }
-            else{
-                Toast.makeText(this, "Student account created!", Toast.LENGTH_LONG).show();
-                dbHelper.addStudent(newStudent);
-            }
-        }
-        else {
+
+        } else {
             Toast.makeText(this, "Please select a role (Tutor or Student)", Toast.LENGTH_SHORT).show();
         }
-
-        // After successfully creating account, navigate to another screen
-        Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
     }
+
 
 
 }

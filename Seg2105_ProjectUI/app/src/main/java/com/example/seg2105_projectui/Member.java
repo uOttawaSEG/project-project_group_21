@@ -1,13 +1,6 @@
 package com.example.seg2105_projectui;
-
-
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
-
-
-public class Member extends User{
+import java.io.*;
+public class Member extends User implements Serializable {
     private String firstName;
     private String lastName;
     private String phoneNumber;

@@ -78,6 +78,7 @@ public class AdminViewPending extends AppCompatActivity {
             SignUpActivity.dbHelper.approveUser(currentFile.getUserName());
             //Remove from the file list
             pendingFiles.remove(pendingFileCounter);
+            pendingFileCounter -= 1;
 
             //If there's not more remaining files show a message
             if (pendingFiles.isEmpty()){
@@ -94,6 +95,8 @@ public class AdminViewPending extends AppCompatActivity {
             currentFile.setAccountStatus(2);
             SignUpActivity.dbHelper.rejectUser(currentFile.getUserName());
             pendingFiles.remove(pendingFileCounter);
+            pendingFileCounter -= 1;
+
             if (pendingFiles.isEmpty()){
                 updateScreenNoMoreFiles();
             } else {

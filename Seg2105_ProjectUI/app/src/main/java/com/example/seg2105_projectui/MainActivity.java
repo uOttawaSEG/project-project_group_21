@@ -35,14 +35,23 @@ public class MainActivity extends AppCompatActivity {
             else {
                 //connect to database
                 DatabaseHelper db = new DatabaseHelper(MainActivity.this);
-                User user = db.checkUser(email, password);
+                Member user = db.checkUser(email, password);
                 //check if user exists in database
                 if (user == null) {
-                    Toast.makeText(MainActivity.this, "User do not exist. pls sign up", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "User does not exist. pls sign up", Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent1 = new Intent(MainActivity.this, WelcomeActivity.class);
-                    intent1.putExtra("userInfo", user);
-                    startActivity(intent1);
+                    if(user.getAccountStatus() == 1 || user.getUserName().equals("admin"))
+                    {
+                        Intent intent1 = new Intent(MainActivity.this, WelcomeActivity.class);
+                        intent1.putExtra("userInfo", user);
+                        startActivity(intent1);
+                    }
+                    else if(user.getAccountStatus() == 0){
+                        Toast.makeText(MainActivity.this, "Account approval pending, please wait for the account to be processed. ", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Account Rejected, please contact support at 111-222-3333. ", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
             //Add backend later

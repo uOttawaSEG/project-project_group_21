@@ -74,6 +74,7 @@ public class AdminViewRejections extends AppCompatActivity {
             SignUpActivity.dbHelper.approveUser(currentFile.getUserName());
             //Remove from the file list
             pendingFiles.remove(pendingFileCounter);
+            pendingFileCounter -= 1;
 
             //If there's not more remaining files show a message
             if (pendingFiles.isEmpty()){

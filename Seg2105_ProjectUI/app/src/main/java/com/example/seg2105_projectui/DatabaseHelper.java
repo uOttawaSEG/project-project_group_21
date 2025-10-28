@@ -39,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_COURSES = "courses"; // Stored as a comma-separated string
 
     //Student specifc
-    public static final String COLUMN_PROGRAM = "program"; 
+    public static final String COLUMN_PROGRAM = "program";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -133,22 +133,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ... (at the end of your DatabaseHelper.java file, inside the class)
 
     // Method to check if a user exists with the given credentials
-    public User checkUser(String username, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();    
-        User user = null;
-        Member member = null;
+    public void approveUser(String username){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ACCOUNT_STATUS, 1);
+
+        db.update(
+                TABLE_USERS,
+                values,
+                COLUMN_USERNAME + " = ?", //parameter placeholder?
+                new String[]{username}
+        );
+        db.close();
+    }
+
+    public Member checkUser(String username, String password) { // Changed return type to Member for clarity
+        SQLiteDatabase db = this.getReadableDatabase();
+        Member member = null; // This will be our return value
+
         String[] columns = {
                 COLUMN_ID,
                 COLUMN_FIRST_NAME,
                 COLUMN_LAST_NAME,
                 COLUMN_PHONE,
                 COLUMN_ROLE
-
         };
 
         String selection = COLUMN_USERNAME + " = ?" + " AND " + COLUMN_PASSWORD + " = ?";
         String[] selectionArgs = { username, password };
-        System.out.println(selection);
 
         Cursor cursor = db.query(TABLE_USERS,
                 columns,
@@ -169,30 +181,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
                 String phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
 
+                // Assign the created member object to the 'member' variable
                 member = new Member(username, password, lastName, firstName, phoneNumber, role);
             }
         }
+
+        // It's crucial to close the cursor and database
         if (cursor != null) {
             cursor.close();
         }
         db.close();
 
+        // Return the member object, which is either null or the user's data
         return member;
     }
 
-    public void approveUser(String username){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_ACCOUNT_STATUS, 1);
-
-        db.update(
-                TABLE_USERS,
-                values,
-                COLUMN_USERNAME + " = ?", //parameter placeholder?
-                new String[]{username}
-        );
+    // In DatabaseHelper.java
+    public boolean isUserExists(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_USERNAME},
+                COLUMN_USERNAME + "=?", new String[]{username},
+                null, null, null);
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
         db.close();
+        return exists;
     }
+
 
     public void rejectUser(String username){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -217,53 +232,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 COLUMN_LAST_NAME + " ASC");
-        
+
     }
 
-    public List<Member> getUsersByStatusList(int status){
-        List<Member> list = new ArrayList<>();
-        Cursor cursor = getUsersByStatus(status);
 
-        if (cursor != null && cursor.moveToFirst()){
-            do { 
-                String userName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
-                String userPassword = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
-                String userLastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
-                String userFirstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
-                String userPhoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
-                String userRole = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
+    // In DatabaseHelper.java
 
-                if ("Tutor".equals(userRole)){
+    public List<Member> getUsersByStatusList(int status) {
+        List<Member> userList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
 
-                    String highestDegree = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEGREE));
-                    String courses = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSES));
-                    String[] courseOffered;
+        String selection = COLUMN_ACCOUNT_STATUS + " = ?";
+        String[] selectionArgs = { String.valueOf(status) };
 
-                    if (courses != null && !courses.isEmpty()){
-                        courseOffered = courses.split(",");
-                    }else{
-                        courseOffered = null;//might need changing
-                    }//also im not sure if admin would ever show up in this so i didn't do anything about that
+        // Make sure you are querying ALL necessary columns, including role-specific ones
+        // like COLUMN_PROGRAM, COLUMN_DEGREE, COLUMN_COURSES
+        Cursor cursor = db.query(TABLE_USERS, null, selection, selectionArgs, null, null, null);
 
-                    Tutor tutor = new Tutor(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole, highestDegree, courseOffered);
-                    list.add(tutor);
+        if (cursor.moveToFirst()) {
+            do {
+                // --- THIS IS THE CRITICAL FIX ---
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME));
+                String password = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+                String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+                String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+                String phone = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
+                String role = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
 
-                }else if ("Student".equals(userRole)){
+                Member member; // Declare a variable to hold the new object
 
+                if ("Student".equals(role)) {
+                    // If the role is "Student", get student-specific data...
                     String program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+                    // ...and create a NEW STUDENT OBJECT.
+                    member = new Student(username, password, lastName, firstName, phone, role, program);
 
-                    Student student = new Student(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole, program);
-                    list.add(student);
+                } else if ("Tutor".equals(role)) {
+                    // If the role is "Tutor", get tutor-specific data...
+                    String degree = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEGREE));
+                    String coursesStr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSES));
+                    String[] courses = (coursesStr != null) ? coursesStr.split(",") : new String[0];
+                    // ...and create a NEW TUTOR OBJECT.
+                    member = new Tutor(username, password, lastName, firstName, phone, role, degree, courses);
 
+                } else {
+                    // For any other role (like Admin), create a generic Member
+                    member = new Member(username, password, lastName, firstName, phone, role);
                 }
+                userList.add(member);
 
             } while (cursor.moveToNext());
-
-            cursor.close();
         }
-        return list;
+
+        cursor.close();
+        db.close();
+        return userList;
     }
-    
+
 
 }
 
