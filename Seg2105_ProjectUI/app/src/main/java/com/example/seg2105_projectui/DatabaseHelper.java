@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.seg2105_projectui.Member;
 import com.example.seg2105_projectui.Tutor;
 import com.example.seg2105_projectui.Student;
+import com.example.seg2105_projectui.User;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -38,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_COURSES = "courses"; // Stored as a comma-separated string
 
     //Student specifc
-    public static final String COLUMN_PROGRAM = "program"; // Stored as a comma-separated string
+    public static final String COLUMN_PROGRAM = "program"; 
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -133,7 +134,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Method to check if a user exists with the given credentials
     public User checkUser(String username, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();    User user = null;
+        SQLiteDatabase db = this.getReadableDatabase();    
+        User user = null;
         Member member = null;
         String[] columns = {
                 COLUMN_ID,
