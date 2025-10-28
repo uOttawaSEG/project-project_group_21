@@ -6,7 +6,7 @@
     tools:context=".WelcomeActivity">
 
     <TextView
-        android:id="@+id/welcomeMessage"
+        android:id="@+id/WelcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Welcome, [First Name]!"
@@ -28,11 +28,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcomeMessage"
+        app:layout_constraintTop_toBottomOf="@+id/WelcomeMessage"
         tools:text="You are logged in as a [Role] " />
 
     <Button
-        android:id="@+id/buttonViewRejections"
+        android:id="@+id/buttonContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@android:color/black"
@@ -45,7 +45,7 @@
         app:layout_constraintVertical_bias="0.62" />
 
     <Button
-        android:id="@+id/buttonViewPending"
+        android:id="@+id/buttonLogOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@android:color/black"

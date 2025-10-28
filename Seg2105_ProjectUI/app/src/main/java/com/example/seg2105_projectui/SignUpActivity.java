@@ -12,7 +12,7 @@ public class SignUpActivity extends AppCompatActivity {
     private RadioGroup roleGroup;
     private LinearLayout tutorFields;
 
-    private DatabaseHelper dbHelper;
+    public static DatabaseHelper dbHelper;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -16,7 +16,7 @@ public class    WelcomeActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Member user = (Member) getIntent().getSerializableExtra("userInfo");
 
-        TextView welcomeMessage = findViewById(R.id.welcomeMessage);
+        TextView welcomeMessage = findViewById(R.id.WelcomeMessage);
         TextView userDetails = findViewById(R.id.userDetails);
 
         String welcomeText = "Welcome, " + user.getFirstName() + "!";
@@ -26,12 +26,22 @@ public class    WelcomeActivity extends AppCompatActivity {
         userDetails.setText(detailsText);
 
         //logout button functionality
-        Button logoutButton = findViewById(R.id.buttonViewPending);
+        Button logoutButton = findViewById(R.id.buttonLogOut);
 
         logoutButton.setOnClickListener(v -> {
             Intent intent1 = new Intent(WelcomeActivity.this, MainActivity.class);
             startActivity(intent1);
             finish();
+        });
+
+        Button buttonToNextPage = findViewById(R.id.buttonContinue);
+
+        buttonToNextPage.setOnClickListener(v -> {
+            if (user.getUserRole().equals("System Admin")) {
+                Intent intent2 = new Intent(WelcomeActivity.this, AdminSelect.class);
+                startActivity(intent2);
+                finish();
+            }
         });
     }
 }
