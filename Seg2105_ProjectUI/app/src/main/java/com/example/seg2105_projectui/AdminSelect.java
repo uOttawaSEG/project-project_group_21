@@ -20,10 +20,9 @@ public class AdminSelect extends AppCompatActivity {
         textSelectedaTask.setText("Please Select a Task");
 
 
-        Button buttonGoBack = findViewById(R.id.buttonGoBack);
-
+        Button buttonGoBack = findViewById(R.id.buttonGoLogOut);
         buttonGoBack.setOnClickListener(v -> {
-            Intent intent3 = new Intent(AdminSelect.this, WelcomeActivity.class);
+            Intent intent3 = new Intent(AdminSelect.this, MainActivity.class);
             startActivity(intent3);
             finish();
         });

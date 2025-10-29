@@ -266,6 +266,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
                     // ...and create a NEW STUDENT OBJECT.
                     member = new Student(username, password, lastName, firstName, phone, role, program);
+                    userList.add(member);
 
                 } else if ("Tutor".equals(role)) {
                     // If the role is "Tutor", get tutor-specific data...
@@ -274,12 +275,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String[] courses = (coursesStr != null) ? coursesStr.split(",") : new String[0];
                     // ...and create a NEW TUTOR OBJECT.
                     member = new Tutor(username, password, lastName, firstName, phone, role, degree, courses);
+                    userList.add(member);
 
-                } else {
-                    // For any other role (like Admin), create a generic Member
-                    member = new Member(username, password, lastName, firstName, phone, role);
                 }
-                userList.add(member);
 
             } while (cursor.moveToNext());
         }
@@ -289,6 +287,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userList;
     }
 
+    public int checkUserStatus(String username, String password) { // Changed return type to Member for clarity
+        SQLiteDatabase db = this.getReadableDatabase();
+        int status = 999; // This will be our return value
+
+        String[] columns = {
+                COLUMN_ID,
+                COLUMN_FIRST_NAME,
+                COLUMN_LAST_NAME,
+                COLUMN_PHONE,
+                COLUMN_ROLE,
+                COLUMN_ACCOUNT_STATUS
+        };
+
+        String selection = COLUMN_USERNAME + " = ?" + " AND " + COLUMN_PASSWORD + " = ?";
+        String[] selectionArgs = {username, password};
+
+        Cursor cursor = db.query(TABLE_USERS,
+                columns,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String role = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
+
+            if (role.equals("Admin")) {
+                status = 1;
+            } else {
+                status = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACCOUNT_STATUS)));
+            }
+        }
+
+        cursor.close();
+        db.close();
+        return status;
+    }
 
 }
 

@@ -24,13 +24,13 @@ public class AdminViewPending extends AppCompatActivity {
     private TextView displayLastName;
     private TextView displayPhoneNumber;
     private TextView displayUsername;
-    private TextView displayCoursesANDProgram;
-    private TextView displayDegreeANDBlank;
+    private TextView displayCoursesANDBlank;
+    private TextView displayDegreeANDProgram;
 
     //the current file or application, it is provided from pendFiles
     private Member currentFile;
     //A list of pending users, in Rejections its a list of rejected users
-    private List<Member> pendingFiles;
+    private List<Member> pendingFiles = null;
     //counter/iterator to go through pendingFiles
     private int pendingFileCounter;
 
@@ -38,8 +38,8 @@ public class AdminViewPending extends AppCompatActivity {
 
 
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.admin_view_pending);
 
         dbHelper = new DatabaseHelper(this);
 
@@ -49,17 +49,20 @@ public class AdminViewPending extends AppCompatActivity {
         displayLastName = findViewById(R.id.display_lastName_pending);
         displayPhoneNumber = findViewById(R.id.display_phone_pending);
         displayUsername = findViewById(R.id.display_username_pending);
-        displayCoursesANDProgram = findViewById(R.id.display_coursesOffered_pending);
-        displayDegreeANDBlank = findViewById(R.id.display_highestDegree_pending);
+        displayCoursesANDBlank = findViewById(R.id.display_coursesOffered_pending);
+        displayDegreeANDProgram = findViewById(R.id.display_highestDegree_pending);
 
-        //check if list isnt empt
-        if (!dbHelper.getUsersByStatusList(0).isEmpty()) {
-            pendingFiles = dbHelper.getUsersByStatusList(0);
-            pendingFileCounter = 0;
-            getNewUser(0);
-        } else {
+
+        pendingFiles = dbHelper.getUsersByStatusList(0);
+        pendingFileCounter = 0;
+
+        if (pendingFiles.isEmpty()){
             updateScreenNoMoreFiles();
+        } else {
+            getNewUser(0);
         }
+
+
 
 
         //SET BACK BUTTON
@@ -73,35 +76,39 @@ public class AdminViewPending extends AppCompatActivity {
         //ALL THE DIFFERENT BUTTONS
         Button approveButton = findViewById(R.id.approveButton);
         approveButton.setOnClickListener(v -> {
-            //Set the user to be approved
-            currentFile.setAccountStatus(1);
-            //Set user in the database to be approved
-            dbHelper.approveUser(currentFile.getUserName());
-            //Remove from the file list
-            pendingFiles.remove(pendingFileCounter);
-            pendingFileCounter -= 1;
-
-            //If there's not more remaining files show a message
-            if (pendingFiles.isEmpty()){
-                updateScreenNoMoreFiles();
-            } else {
-                //else get the next file
-                getNewUser(1);
+            if (!pendingFiles.isEmpty()){
+                //Set the user to be approved
+                //Set user in the database to be approved
+                dbHelper.approveUser(currentFile.getUserName());
+                //Remove from the file list
+                pendingFiles.remove(pendingFileCounter);
+                pendingFileCounter -= 1;
+                //If there's not more remaining files show a message
+                if (pendingFiles.isEmpty()){
+                    updateScreenNoMoreFiles();
+                } else {
+                    //else get the next file
+                    getNewUser(1);
+                }
             }
         });
 
         Button rejectButton = findViewById(R.id.rejectButton);
         rejectButton.setOnClickListener(v -> {
-            //set user to be rejected
-            currentFile.setAccountStatus(2);
-            dbHelper.rejectUser(currentFile.getUserName());
-            pendingFiles.remove(pendingFileCounter);
-            pendingFileCounter -= 1;
-
-            if (pendingFiles.isEmpty()){
-                updateScreenNoMoreFiles();
-            } else {
-                getNewUser(1);
+            if (!pendingFiles.isEmpty()){
+                //Set the user to be approved
+                //Set user in the database to be approved
+                dbHelper.rejectUser(currentFile.getUserName());
+                //Remove from the file list
+                pendingFiles.remove(pendingFileCounter);
+                pendingFileCounter -= 1;
+                //If there's not more remaining files show a message
+                if (pendingFiles.isEmpty()){
+                    updateScreenNoMoreFiles();
+                } else {
+                    //else get the next file
+                    getNewUser(1);
+                }
             }
         });
 
@@ -156,16 +163,17 @@ public class AdminViewPending extends AppCompatActivity {
             tempText = "Program: " + tempUser.getProgram();
         } else {
             Tutor tempUser = (Tutor)currentFile;
-            tempText = "Courses Offered: " + Arrays.toString(tempUser.getCoursesOffered());
-        }
-        displayCoursesANDProgram.setText(tempText);
-        if (currentFile.getUserRole().equals("Student")) {
-            tempText = "";
-        } else {
-            Tutor tempUser = (Tutor)currentFile;
             tempText = "Highest Degree: " + tempUser.getHighestDegree();
         }
-        displayDegreeANDBlank.setText(tempText);
+        displayDegreeANDProgram.setText(tempText);
+
+        if (currentFile.getUserRole().equals("Student")) {
+            tempText = " ";
+        } else {
+            Tutor tempUser = (Tutor)currentFile;
+            tempText = "Courses Offered: " + Arrays.toString(tempUser.getCoursesOffered());
+        }
+        displayCoursesANDBlank.setText(tempText);
     }
 
     //set the screen to just be blank with a line saying that there's no more files
@@ -178,7 +186,7 @@ public class AdminViewPending extends AppCompatActivity {
         tempText = " ";
         displayPhoneNumber.setText(tempText);
         displayUsername.setText(tempText);
-        displayCoursesANDProgram.setText(tempText);
-        displayDegreeANDBlank.setText(tempText);
+        displayCoursesANDBlank.setText(tempText);
+        displayDegreeANDProgram.setText(tempText);
     }
 }

@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
                 if (user == null) {
                     Toast.makeText(MainActivity.this, "User does not exist. pls sign up", Toast.LENGTH_SHORT).show();
                 } else {
-                    if(user.getAccountStatus() == 1 || user.getUserName().equals("admin"))
+                    if(db.checkUserStatus(email,password) == 1 || user.getUserName().equals("admin"))
                     {
                         Intent intent1 = new Intent(MainActivity.this, WelcomeActivity.class);
                         intent1.putExtra("userInfo", user);
                         startActivity(intent1);
                     }
-                    else if(user.getAccountStatus() == 0){
+                    else if(db.checkUserStatus(email,password) == 0){
                         Toast.makeText(MainActivity.this, "Account approval pending, please wait for the account to be processed. ", Toast.LENGTH_SHORT).show();
                     }
                     else {
