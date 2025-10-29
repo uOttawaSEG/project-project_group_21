@@ -33,7 +33,7 @@ public class AdminSelect extends AppCompatActivity {
         buttonViewPending.setOnClickListener(v -> {
             Intent intent4 = new Intent(AdminSelect.this, AdminViewPending.class);
             startActivity(intent4);
-            finish();
+
         });
 
         Button buttonViewRejection = findViewById(R.id.buttonViewRejection);
@@ -41,7 +41,7 @@ public class AdminSelect extends AppCompatActivity {
         buttonViewRejection.setOnClickListener(v -> {
             Intent intent5 = new Intent(AdminSelect.this, AdminViewRejections.class);
             startActivity(intent5);
-            finish();
+
         });
 
 

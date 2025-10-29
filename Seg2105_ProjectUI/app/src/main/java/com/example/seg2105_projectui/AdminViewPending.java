@@ -34,10 +34,14 @@ public class AdminViewPending extends AppCompatActivity {
     //counter/iterator to go through pendingFiles
     private int pendingFileCounter;
 
+    private DatabaseHelper dbHelper;
+
 
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.admin_view_pending);
+
+        dbHelper = new DatabaseHelper(this);
 
         //SET UP TEXT FILES; every line is a display, this allows you to change them easily
         displayRole = findViewById(R.id.display_role_pending);
@@ -48,15 +52,12 @@ public class AdminViewPending extends AppCompatActivity {
         displayCoursesANDProgram = findViewById(R.id.display_coursesOffered_pending);
         displayDegreeANDBlank = findViewById(R.id.display_highestDegree_pending);
 
-        //check if list isnt empty
-        if (SignUpActivity.dbHelper.getUsersByStatusList(0).isEmpty()){
-            //pendingFiles is a List<Member>, that is a list of all files (students and tutors) awaiting approval, we give it 0 to specify pending users
-            pendingFiles = SignUpActivity.dbHelper.getUsersByStatusList(0);
-            //pendingFileCounter is just a way to traverse index
+        //check if list isnt empt
+        if (!dbHelper.getUsersByStatusList(0).isEmpty()) {
+            pendingFiles = dbHelper.getUsersByStatusList(0);
             pendingFileCounter = 0;
             getNewUser(0);
         } else {
-            //set the screen to have a message that there's no more files
             updateScreenNoMoreFiles();
         }
 
@@ -75,7 +76,7 @@ public class AdminViewPending extends AppCompatActivity {
             //Set the user to be approved
             currentFile.setAccountStatus(1);
             //Set user in the database to be approved
-            SignUpActivity.dbHelper.approveUser(currentFile.getUserName());
+            dbHelper.approveUser(currentFile.getUserName());
             //Remove from the file list
             pendingFiles.remove(pendingFileCounter);
             pendingFileCounter -= 1;
@@ -93,7 +94,7 @@ public class AdminViewPending extends AppCompatActivity {
         rejectButton.setOnClickListener(v -> {
             //set user to be rejected
             currentFile.setAccountStatus(2);
-            SignUpActivity.dbHelper.rejectUser(currentFile.getUserName());
+            dbHelper.rejectUser(currentFile.getUserName());
             pendingFiles.remove(pendingFileCounter);
             pendingFileCounter -= 1;
 

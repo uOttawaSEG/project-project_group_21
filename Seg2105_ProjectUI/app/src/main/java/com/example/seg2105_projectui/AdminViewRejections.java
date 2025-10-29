@@ -30,10 +30,13 @@ public class AdminViewRejections extends AppCompatActivity {
     private List<Member> pendingFiles;
     private int pendingFileCounter;
 
+    private DatabaseHelper dbHelper;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_view_rejections);
+        dbHelper = new DatabaseHelper(this);
 
         //SET UP TEXT FILES
         displayRole = findViewById(R.id.display_role_rejections);
@@ -45,14 +48,13 @@ public class AdminViewRejections extends AppCompatActivity {
         displayDegreeANDBlank = findViewById(R.id.display_highestDegree_rejections);
 
         //check if list isnt empty //we use 2 to specify rejected users
-        if (SignUpActivity.dbHelper.getUsersByStatusList(2).isEmpty()){
-            //pendingFiles is a List<Member>, that is a list of all files (students and tutors) that were rejected
-            pendingFiles = SignUpActivity.dbHelper.getUsersByStatusList(2);
-            //pendingFileCounter is just a way to traverse index
+        if (!dbHelper.getUsersByStatusList(2).isEmpty()) {
+            // pendingFiles is a List<Member> that contains all rejected users
+            pendingFiles = dbHelper.getUsersByStatusList(2);
             pendingFileCounter = 0;
             getNewUser(0);
         } else {
-            //set the screen to have a message that there's no more files
+            // set the screen to have a message that there's no more files
             updateScreenNoMoreFiles();
         }
 
@@ -71,7 +73,7 @@ public class AdminViewRejections extends AppCompatActivity {
             //Set the user to be approved
             currentFile.setAccountStatus(1);
             //Set user in the database to be approved
-            SignUpActivity.dbHelper.approveUser(currentFile.getUserName());
+            dbHelper.approveUser(currentFile.getUserName());
             //Remove from the file list
             pendingFiles.remove(pendingFileCounter);
             pendingFileCounter -= 1;
