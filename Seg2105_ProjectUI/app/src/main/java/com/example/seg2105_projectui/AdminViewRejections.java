@@ -15,6 +15,8 @@ import android.content.Intent;
 import java.util.Arrays;
 import java.util.List;
 
+import android.net.Uri;
+
 
 public class AdminViewRejections extends AppCompatActivity {
 
@@ -80,6 +82,7 @@ public class AdminViewRejections extends AppCompatActivity {
                 //Set the user to be approved
                 //Set user in the database to be approved
                 dbHelper.approveUser(currentFile.getUserName());
+                sendMessage(currentFile.getUserName(), "re-evaluated and accepted");
                 //Remove from the file list
                 pendingFiles.remove(pendingFileCounter);
                 pendingFileCounter -= 1;
@@ -170,5 +173,20 @@ public class AdminViewRejections extends AppCompatActivity {
         displayUsername.setText(tempText);
         displayCoursesANDBlank.setText(tempText);
         displayDegreeANDProgram.setText(tempText);
+    }
+
+    private void sendMessage(String email, String decision){
+        try {
+            Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
+            sendEmail.setData(Uri.parse("mailto:"));
+            sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
+            sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Decision made about your application");
+            sendEmail.putExtra(Intent.EXTRA_TEXT, "Your recent application to the SEG2105 tutoring and learning system has been " + decision + " by administration.");
+            startActivity(sendEmail);
+        } catch (Exception error){
+            //String tempText = error.getMessage();
+            //displayRole.setText(tempText);
+            // error with sending message
+        }
     }
 }
