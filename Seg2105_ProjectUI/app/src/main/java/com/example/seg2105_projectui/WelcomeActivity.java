@@ -42,6 +42,12 @@ public class    WelcomeActivity extends AppCompatActivity {
                 startActivity(intent2);
                 finish();
             }
+            else if (user.getUserRole().equals("Tutor"))
+            {
+                Intent intentTutor = new Intent(WelcomeActivity.this, TutorActivity.class);
+                startActivity(intentTutor);
+                finish();
+            }
         });
     }
 }

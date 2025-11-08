@@ -29,6 +29,7 @@
         <activity android:name=".AdminSelect"/>
         <activity android:name=".AdminViewPending"/>
         <activity android:name=".AdminViewRejections"/>
+        <activity android:name=".TutorActivity"/>
 
     </application>
 
