@@ -598,7 +598,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void deleteSession(String tutorUsername, String date, String startTime){//just deletes a session, does no checks or anything
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SESSIONS, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime});
+        db.close();
+    }
 
+    public boolean sessionOverlap(String tutorUsername, String date, String startTime) {//checks if the given parameters already exist
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_SESSION_ID},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
+
+        boolean overlap = cursor.moveToFirst();//this is false if this is empty, so if false session doesn't exist
+
+        cursor.close();
+        db.close();
+        return overlap;
+    }
+
+    public Student getStudent(String studentUsername){//just returns a student object with all a students info from the given username
+        // only works if student exists so pls check that first
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, null,
+                COLUMN_USERNAME + "=?",
+                new String[]{studentUsername}, null, null, null);
+
+        Student student = null;
+
+        if (cursor.moveToFirst()){
+            String password = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
+            String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
+            String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
+            String program  = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+            String role  = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));//must be Student or db explodes
+
+            student = new Student(studentUsername, password, lastName, firstName, phone, role, program);
+        }
+        cursor.close();
+        db.close();
+        return student;
+
+    }
 
 
 }
