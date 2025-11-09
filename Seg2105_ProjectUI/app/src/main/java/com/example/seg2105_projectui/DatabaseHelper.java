@@ -1,6 +1,7 @@
 package com.example.seg2105_projectui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -23,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Table Name
     public static final String TABLE_USERS = "users";
+    public static final String TABLE_SESSIONS = "sessions";
 
     // Users Table Columns
     public static final String COLUMN_ID = "id";//i am unsure as to what id
@@ -33,6 +35,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PHONE = "phone_number";
     public static final String COLUMN_ROLE = "role"; // "Student" or "Tutor"
     public static final String COLUMN_ACCOUNT_STATUS = "account_status";
+
+
+    //sessions
+    public static final String COLUMN_SESSION_ID = "session_id";//i am unsure as to what id
+    public static final String COLUMN_TUTOR_USERNAME = "tutor_username";
+    public static final String COLUMN_DATE = "date";//idk how to make dates work in this
+    public static final String COLUMN_START_TIME = "start_time";//idk how to make time work in this
+    public static final String COLUMN_PENDING_STUDENTS = "pending_students";//do lists work in this????
+    public static final String COLUMN_APPROVED_STUDENTS = "approved_students";
+    public static final String COLUMN_REJECTED_STUDENTS = "rejected_students";
+
+
+
 
     // Tutor-specific columns (can be null for students)
     public static final String COLUMN_DEGREE = "degree";
@@ -63,6 +78,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ACCOUNT_STATUS + " INTEGER DEFAULT 0" + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
+
+        String CREATE_SESSIONS_TABLE = "CREATE TABLE " + TABLE_SESSIONS + "("
+                + COLUMN_SESSION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                +COLUMN_TUTOR_USERNAME + " TEXT NOT NULL, "
+                +COLUMN_DATE + " TEXT, "
+                +COLUMN_START_TIME + " TEXT, "
+                +COLUMN_PENDING_STUDENTS + " TEXT, "
+                +COLUMN_APPROVED_STUDENTS + " TEXT, "
+                +COLUMN_REJECTED_STUDENTS + " TEXT" + ")";
+        db.execSQL(CREATE_SESSIONS_TABLE);
+
+
         //admin
         ContentValues admin = new ContentValues();
         admin.put(COLUMN_USERNAME, "admin");
@@ -78,6 +105,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion != newVersion) {
             // Simplest implementation is to drop all old tables and recreate them
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONS);
+
             onCreate(db);
         }
     }
@@ -325,6 +354,236 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return status;
     }
+
+
+
+
+    //new sessions methods
+
+    public List<String> stringToList(String str){
+        if (str == null || str.isBlank()){return new ArrayList<>();}//this makes it so i dont need to ever worry if str doesn't exist
+        return new ArrayList<>(Arrays.asList(str.split(",")));
+    }
+
+    //
+
+    public String listToString(List<String> list){
+        return String.join(",", list);
+    }
+
+
+
+
+    public void createSession(String tutorUsername, String data, String startTime){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_TUTOR_USERNAME, tutorUsername);
+        values.put(COLUMN_DATE, data);
+        values.put(COLUMN_START_TIME, startTime);
+
+        values.put(COLUMN_PENDING_STUDENTS, "");
+        values.put(COLUMN_APPROVED_STUDENTS, "");
+        values.put(COLUMN_REJECTED_STUDENTS, "");
+
+        db.insert(TABLE_SESSIONS, null, values);
+        db.close();
+
+    }
+
+    public void studentPending(String tutorUsername, String studentUsername){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS}, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
+
+
+            List<String> pendingList = stringToList(pending);
+
+
+            if(!pendingList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+                pendingList.add(studentUsername);
+            }
+
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername});
+
+        }
+
+        cursor.close();
+        db.close();
+
+    }
+
+    public void approveStudent(String tutorUsername, String studentUsername){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_APPROVED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
+            String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
+            List<String> pendingList = stringToList(pending);
+            List<String> approvedList = stringToList(approved);
+
+            pendingList.remove(studentUsername);
+
+            if(!approvedList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+                approvedList.add(studentUsername);
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));//update pending with new string of students (which does not include the studentUsername)
+            values.put(COLUMN_APPROVED_STUDENTS, listToString(approvedList));
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername});
+
+        }
+
+        cursor.close();
+        db.close();
+    }
+
+    public void rejectStudent(String tutorUsername, String studentUsername){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_REJECTED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
+            String rejected = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS));
+            List<String> pendingList = stringToList(pending);
+            List<String> rejectedList = stringToList(rejected);
+
+            pendingList.remove(studentUsername);
+
+            if(!rejectedList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+                rejectedList.add(studentUsername);
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));//update pending with new string of students (which does not include the studentUsername)
+            values.put(COLUMN_REJECTED_STUDENTS, listToString(rejectedList));
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername});
+
+        }
+
+        cursor.close();
+        db.close();
+    }
+
+
+    public List<Sessions> getTutorSessions(String tutorUsername){//returns all sessions a specific tutor has
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<Sessions> sessions = new ArrayList<>();
+
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            do{
+
+                List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
+                List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
+                List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
+
+                String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+
+                sessions.add(new Sessions(tutorUsername, date, startTime, pending, approved, rejected));
+
+            }while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+    }
+
+    public List<String> getApprovedStudents(String tutorUsername, String startTime){//returns all approved students of a session
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<String> approved = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_APPROVED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_START_TIME + "=?", new String[]{tutorUsername, startTime}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
+        }
+
+        cursor.close();
+        db.close();
+        return approved;
+
+    }
+
+    public List<String> getRejectedStudents(String tutorUsername, String startTime){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<String> rejected = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_REJECTED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_START_TIME + "=?", new String[]{tutorUsername, startTime}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
+        }
+
+        cursor.close();
+        db.close();
+        return rejected;
+
+    }
+
+    public List<String> getPendingStudents(String tutorUsername, String startTime){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<String> pending = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS}, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_START_TIME + "=?", new String[]{tutorUsername, startTime}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
+        }
+
+        cursor.close();
+        db.close();
+        return pending;
+
+    }
+
+    public List<Sessions> sessionsNoStudents(){//returns ALL sessions that have no approved students as of yet
+        List<Sessions> sessions = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null, null, null, null, null, null);
+
+        if (cursor.moveToFirst()){
+            do{
+                List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
+                List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
+                List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
+
+                if (approved.isEmpty()){
+                    String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                    String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+
+                    sessions.add(new Sessions(tutorUsername, date, startTime, pending, approved, rejected));
+                }
+            }while (cursor.moveToNext());
+
+        }
+        cursor.close();
+        db.close();
+        return sessions;
+
+
+    }
+
+
+
 
 }
 
