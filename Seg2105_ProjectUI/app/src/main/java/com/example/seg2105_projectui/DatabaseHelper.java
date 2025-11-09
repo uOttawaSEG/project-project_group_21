@@ -374,7 +374,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public void createSession(String tutorUsername, String data, String startTime){
+    public void createSession(String tutorUsername, String data, String startTime){//stores session in database given parameters
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -391,14 +391,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void studentPending(String tutorUsername, String studentUsername){
+    public void studentPending(String tutorUsername, String date, String startTime, String studentUsername){//adds student to a sessions waitlist
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS}, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
 
         if (cursor.moveToFirst()){
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
-
-
             List<String> pendingList = stringToList(pending);
 
 
@@ -409,7 +409,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues values = new ContentValues();
             values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));
-            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername});
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                    new String[]{tutorUsername, date, startTime});
 
         }
 
@@ -418,9 +419,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void approveStudent(String tutorUsername, String studentUsername){
+    public void approveStudent(String tutorUsername, String date, String startTime, String studentUsername){//moves student from pending to approved list
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_APPROVED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_APPROVED_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
 
         if (cursor.moveToFirst()){
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
@@ -437,7 +440,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));//update pending with new string of students (which does not include the studentUsername)
             values.put(COLUMN_APPROVED_STUDENTS, listToString(approvedList));
-            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername});
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                    new String[]{tutorUsername, date, startTime});
 
         }
 
@@ -445,9 +449,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void rejectStudent(String tutorUsername, String studentUsername){
+    public void rejectStudent(String tutorUsername, String date, String startTime, String studentUsername){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_REJECTED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_REJECTED_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
 
         if (cursor.moveToFirst()){
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
@@ -464,7 +470,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));//update pending with new string of students (which does not include the studentUsername)
             values.put(COLUMN_REJECTED_STUDENTS, listToString(rejectedList));
-            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername});
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                    new String[]{tutorUsername, date, startTime});
 
         }
 
@@ -479,7 +486,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Sessions> sessions = new ArrayList<>();
 
 
-        Cursor cursor = db.query(TABLE_SESSIONS, null, COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, null,
+                COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
 
         if (cursor.moveToFirst()){
             do{
@@ -502,12 +510,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sessions;
     }
 
-    public List<String> getApprovedStudents(String tutorUsername, String startTime){//returns all approved students of a session
+    public List<String> getApprovedStudents(String tutorUsername, String date, String startTime){//returns all approved students of a session
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<String> approved = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_APPROVED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_START_TIME + "=?", new String[]{tutorUsername, startTime}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_APPROVED_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
 
         if (cursor.moveToFirst()){
             approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
@@ -519,12 +529,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<String> getRejectedStudents(String tutorUsername, String startTime){
+    public List<String> getRejectedStudents(String tutorUsername, String date, String startTime){
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<String> rejected = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_REJECTED_STUDENTS}, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_START_TIME + "=?", new String[]{tutorUsername, startTime}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_REJECTED_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
 
         if (cursor.moveToFirst()){
             rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
@@ -536,12 +548,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<String> getPendingStudents(String tutorUsername, String startTime){
+    public List<String> getPendingStudents(String tutorUsername, String date, String startTime){
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<String> pending = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS}, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_START_TIME + "=?", new String[]{tutorUsername, startTime}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
 
         if (cursor.moveToFirst()){
             pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
@@ -561,14 +575,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()){
             do{
-                List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
                 List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
-                List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
 
                 if (approved.isEmpty()){
                     String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
                     String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                     String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+
+                    List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
+                    List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
+
 
                     sessions.add(new Sessions(tutorUsername, date, startTime, pending, approved, rejected));
                 }
