@@ -8,18 +8,25 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class TutorActivity extends AppCompatActivity {
 
-    private Button btnViewRequests, btnPastSessions, btnUpcomingSessions;
+    private Button btnManage, btnPastSessions, btnUpcomingSessions, btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutor);
 
-        btnViewRequests = findViewById(R.id.btnViewRequests);
+        btnManage = findViewById(R.id.btnManage);
         btnPastSessions = findViewById(R.id.btnPastSessions);
         btnUpcomingSessions = findViewById(R.id.btnUpcomingSessions);
+        btnLogout = findViewById(R.id.btnLogout);
 
-        btnViewRequests.setOnClickListener(new View.OnClickListener() {
+        btnLogout.setOnClickListener(v -> {
+            Intent intent3 = new Intent(TutorActivity.this, MainActivity.class);
+            startActivity(intent3);
+            finish();
+        });
+
+        btnManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //requests page
