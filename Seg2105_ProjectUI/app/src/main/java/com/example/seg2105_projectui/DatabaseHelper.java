@@ -608,6 +608,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sessions;
     }
 
+    public List<Sessions> allSessions(){//returns ALL sessions that have no approved students as of yet
+        List<Sessions> sessions = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null, null, null, null, null, null);
+
+        if (cursor.moveToFirst()){
+            do{
+
+                    String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                    String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+
+                    sessions.add(new Sessions(tutorUsername, date, startTime));
+
+            }while (cursor.moveToNext());
+
+        }
+        cursor.close();
+        db.close();
+        return sessions;
+    }
+
+
 
 
 
