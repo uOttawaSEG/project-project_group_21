@@ -509,7 +509,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
 
-                sessions.add(new Sessions(tutorUsername, date, startTime, pending, approved, rejected));
+                sessions.add(new Sessions(tutorUsername, date, startTime));
 
             }while (cursor.moveToNext());
 
@@ -608,12 +608,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void deleteSession(String tutorUsername, String date, String startTime){//just deletes a session, does no checks or anything
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_SESSIONS, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
-                new String[]{tutorUsername, date, startTime});
-        db.close();
-    }
+
+
 
     public boolean sessionOverlap(String tutorUsername, String date, String startTime) {//checks if the given parameters already exist
         SQLiteDatabase db = this.getWritableDatabase();
