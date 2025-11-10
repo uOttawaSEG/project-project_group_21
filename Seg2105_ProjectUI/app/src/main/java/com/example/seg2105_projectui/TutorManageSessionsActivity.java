@@ -32,6 +32,7 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
+
         loggedInTutor = getIntent().getStringExtra("username");
 
         // error check
@@ -46,7 +47,10 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
         // Set up button actions
         setupButtonClickListeners();
+
+
     }
+
 
     @Override
     protected void onResume() {
@@ -54,6 +58,7 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
         // Load sessions and update the display every time the activity is shown.
         loadSessionsFromDatabase();
     }
+
 
     private void initializeViews() {
         displayDate = findViewById(R.id.display_date_pending2);
@@ -105,7 +110,9 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
                 dbHelper.deleteSession(sessionToDelete);
                 loadSessionsFromDatabase();
                 updateDisplay();
-                Toast.makeText(this, "Delete not implemented in DatabaseHelper.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Delete not implemented in DatabaseHelper.", Toast.LENGTH_SHORT).show(); //should be added
+                Toast.makeText(this, "Session Deleted!", Toast.LENGTH_SHORT).show();
+
             } else {
                 Toast.makeText(this, "No session to delete.", Toast.LENGTH_SHORT).show();
             }

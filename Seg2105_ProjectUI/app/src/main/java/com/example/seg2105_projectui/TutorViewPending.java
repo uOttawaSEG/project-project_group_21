@@ -62,6 +62,13 @@ public class TutorViewPending extends AppCompatActivity {
         //get tutor username
         tutorUsername = getIntent().getStringExtra("username");
 
+        //TEMP JUST TO DISPLAY NOTHING
+        updateScreenNoMoreFiles();
+
+        //set up files
+        pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
+        pendingFileCounter = 0;
+
         //get list to iterate through based on time, date + tutor
         displayDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -79,8 +86,6 @@ public class TutorViewPending extends AppCompatActivity {
                     return;
                 }
 
-                pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
-                pendingFileCounter = 0;
 
                 if (pendingFiles.isEmpty()){
                     updateScreenNoMoreFiles();
@@ -186,7 +191,7 @@ public class TutorViewPending extends AppCompatActivity {
     private void updateScreenNoMoreFiles(){
         String tempText = " ";
         displayFirstName.setText(tempText);
-        tempText = "No more Applications Remain.";
+        tempText = "No more Session Applications Remain.";
         displayLastName.setText(tempText);
         tempText = " ";
         displayPhoneNumber.setText(tempText);
