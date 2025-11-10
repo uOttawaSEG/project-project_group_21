@@ -216,7 +216,7 @@ public class TutorViewPending extends AppCompatActivity {
             sendEmail.setData(Uri.parse("mailto:"));
             sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
             sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Decision made about your application");
-            sendEmail.putExtra(Intent.EXTRA_TEXT, "Your recent application to the SEG2105 tutoring and learning system has been " + decision + " by administration.");
+            sendEmail.putExtra(Intent.EXTRA_TEXT, "Your recent application to the SEG2105 tutoring and learning system has been " + decision + " by your tutor.");
             startActivity(sendEmail);
         } catch (Exception error){
             //String tempText = error.getMessage();
