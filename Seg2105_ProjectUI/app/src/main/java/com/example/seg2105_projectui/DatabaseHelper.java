@@ -14,6 +14,8 @@ import com.example.seg2105_projectui.Member;
 import com.example.seg2105_projectui.Tutor;
 import com.example.seg2105_projectui.Student;
 import com.example.seg2105_projectui.User;
+import com.example.seg2105_projectui.Sessions;
+
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -604,8 +606,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return sessions;
-
-
     }
 
 
