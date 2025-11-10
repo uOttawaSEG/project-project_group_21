@@ -391,6 +391,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void deleteSession(Sessions session) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_SESSIONS,
+                // Find the session that matches all three columns
+                COLUMN_TUTOR_USERNAME + " = ? AND " + COLUMN_DATE + " = ? AND " + COLUMN_START_TIME + " = ?",
+                // The values to match against
+                new String[]{session.tutorUsername, session.date, session.startTime});
+        db.close();
+    }
+
     public void studentPending(String tutorUsername, String date, String startTime, String studentUsername){//adds student to a sessions waitlist
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS},
@@ -499,7 +509,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
 
-                sessions.add(new Sessions(tutorUsername, date, startTime, pending, approved, rejected));
+                sessions.add(new Sessions(tutorUsername, date, startTime));
 
             }while (cursor.moveToNext());
 
@@ -566,7 +576,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return pending;
 
     }
-
     public List<Sessions> sessionsNoStudents(){//returns ALL sessions that have no approved students as of yet
         List<Sessions> sessions = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -586,7 +595,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
 
 
-                    sessions.add(new Sessions(tutorUsername, date, startTime, pending, approved, rejected));
+                    sessions.add(new Sessions(tutorUsername, date, startTime));
                 }
             }while (cursor.moveToNext());
 
@@ -594,9 +603,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return sessions;
-
-
     }
+
+    // In DatabaseHelper.java
+
 
 
 

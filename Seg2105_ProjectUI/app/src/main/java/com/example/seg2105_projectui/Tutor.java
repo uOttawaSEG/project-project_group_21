@@ -1,18 +1,31 @@
 package com.example.seg2105_projectui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Tutor extends Member {
+public class Tutor extends Member implements Serializable {
+
     private String highestDegree;
     private String[] coursesOffered;
+    private List<Sessions> sessions;
+
 
     public Tutor(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole, String userHighestDegree, String[] userCoursesOffered){
-        super(userName,userPassword, userLastName, userFirstName, userPhoneNumber, userRole);
-        highestDegree = userHighestDegree;
-        coursesOffered = userCoursesOffered;
+
+        super(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole);
+        this.highestDegree = userHighestDegree;
+        this.coursesOffered = userCoursesOffered;
+        this.sessions = new ArrayList<>();
+    }
+
+
+    public Tutor(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole, String userHighestDegree, String[] userCoursesOffered, int accountStatus) {
+
+        super(userName, userPassword, userLastName, userFirstName, userPhoneNumber, userRole);
+        this.highestDegree = userHighestDegree;
+        this.coursesOffered = userCoursesOffered;
+        this.sessions = new ArrayList<>();
     }
 
     public String getHighestDegree(){
@@ -23,8 +36,19 @@ public class Tutor extends Member {
         return coursesOffered;
     }
 
-    public String registerUser(){
-        //For back end to save the TUTOR user i think
-        return null;
+    public List<Sessions> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<Sessions> sessions) {
+        this.sessions = sessions;
+    }
+
+    public void createNewSession(String date, String startTime) {
+        Sessions newSession = new Sessions(this.getUserName(), date, startTime);
+        if (this.sessions == null) {
+            this.sessions = new ArrayList<>();
+        }
+        this.sessions.add(newSession);
     }
 }
