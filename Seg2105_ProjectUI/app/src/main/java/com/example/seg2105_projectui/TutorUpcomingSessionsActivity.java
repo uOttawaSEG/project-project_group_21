@@ -32,19 +32,17 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
         tutorUsername = getIntent().getStringExtra("username");
 
 
-        displayTutor = findViewById(R.id.display_username_rejections);
-        displayDate = findViewById(R.id.display_firstname_rejections);
-        displayStartTime = findViewById(R.id.display_lastName_rejections);
-        displayStudentName = findViewById(R.id.display_highestDegree_rejections);
+        displayTutor = findViewById(R.id.display_username);
+        displayDate = findViewById(R.id.display_firstname);
+        displayStartTime = findViewById(R.id.display_lastName);
+        displayStudentName = findViewById(R.id.display_highestDegree);
 
         titleText = findViewById(R.id.textRejectedRequests);
         titleText.setText("Upcoming Sessions");
 
-        Button nextButton = findViewById(R.id.nextButton2);
-        Button prevButton = findViewById(R.id.prevButton2);
-        Button backButton = findViewById(R.id.buttonBackToSelection2);
-        Button dummyButton = findViewById(R.id.approveButton2);
-        dummyButton.setText("No Action");
+        Button nextButton = findViewById(R.id.btnNextUp);
+        Button prevButton = findViewById(R.id.btnPrevUp);
+        Button backButton = findViewById(R.id.btnBackUp);
 
         List<Sessions> allSessions = dbHelper.getTutorSessions(tutorUsername);
 

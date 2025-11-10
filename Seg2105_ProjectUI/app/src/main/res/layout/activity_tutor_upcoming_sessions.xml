@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nextButton2"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,57 +10,57 @@
         android:id="@+id/textRejectedRequests"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="Upcoming Sessions"
         android:textAlignment="center"
         android:textSize="34sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="#16000000"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="#16000000"
-        app:layout_constraintTop_toBottomOf="@id/textRejectedRequests"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textRejectedRequests">
 
         <TextView
             android:id="@+id/display_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Tutor: [Tutor Name]"
-            android:textSize="24sp"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/display_firstname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Date: [Date]"
-            android:textSize="24sp"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/display_lastName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Start Time: [Start Time]"
-            android:textSize="24sp"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/display_highestDegree"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Students: [Student Names]"
-            android:textSize="24sp"/>
+            android:textSize="24sp" />
     </LinearLayout>
 
     <!-- Prev Button -->
@@ -68,37 +68,49 @@
         android:id="@+id/btnPrevUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Previous"
+        android:layout_margin="16dp"
         android:backgroundTint="#000000"
+        android:text="Previous"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnNextUp"
-        android:layout_margin="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout" />
 
     <!-- Next Button -->
     <Button
         android:id="@+id/btnNextUp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Next"
+        android:layout_margin="16dp"
         android:backgroundTint="#000000"
+        android:text="Next"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout"
-        app:layout_constraintStart_toEndOf="@id/btnPrevUp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"/>
+        app:layout_constraintStart_toEndOf="@id/btnPrevUp"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout" />
 
     <!-- Back Button -->
     <Button
         android:id="@+id/btnBackUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go Back"
+        android:layout_marginBottom="32dp"
         android:backgroundTint="#000000"
+        android:text="Go Back"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="32dp"/>
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnCancelSession"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="308dp"
+        android:backgroundTint="#000000"
+        android:text="Cancel Session"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
