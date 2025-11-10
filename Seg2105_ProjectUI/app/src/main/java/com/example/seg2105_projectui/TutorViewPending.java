@@ -3,6 +3,7 @@ package com.example.seg2105_projectui;
 import android.os.Bundle;
 
 
+import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -41,6 +42,8 @@ public class TutorViewPending extends AppCompatActivity {
 
     private String tutorUsername;
 
+    private Button approveButton, rejectButton, prevButton, nextButton;
+
     String date, startTime;
 
 
@@ -58,6 +61,57 @@ public class TutorViewPending extends AppCompatActivity {
         displayPhoneNumber = findViewById(R.id.displayPhone);
         date = "";
         startTime ="";
+
+        //ALL THE DIFFERENT BUTTONS -> moved up to prevent null crash when temp is called
+        approveButton = findViewById(R.id.approveButton);
+        approveButton.setOnClickListener(v -> {
+            if (!pendingFiles.isEmpty()){
+                //Set the user to be approved
+                //Set user in the database to be approved
+                dbHelper.approveStudent(tutorUsername, date, startTime, currentFile.getUserName());
+                sendMessage(currentFile.getUserName(), "approved");
+                //Removal taken care of in function
+
+                pendingFileCounter -= 1;
+                //If there's not more remaining files show a message
+                if (pendingFiles.isEmpty()){
+                    updateScreenNoMoreFiles();
+                } else {
+                    //else get the next file
+                    getNewUser(1);
+                }
+            }
+        });
+
+        rejectButton = findViewById(R.id.rejectButton);
+        rejectButton.setOnClickListener(v -> {
+            if (!pendingFiles.isEmpty()){
+                //Set the user to be approved
+                //Set user in the database to be approved
+                dbHelper.rejectStudent(tutorUsername, date, startTime, currentFile.getUserName());
+                sendMessage(currentFile.getUserName(), "rejected");
+
+                //If there's not more remaining files show a message
+                if (pendingFiles == null || pendingFiles.isEmpty()){
+                    updateScreenNoMoreFiles();
+                } else {
+                    //else get the next file
+                    getNewUser(1);
+                }
+            }
+        });
+
+        prevButton = findViewById(R.id.prevButton);
+        prevButton.setOnClickListener(v -> {
+            //get previous file
+            getNewUser(-1);
+        });
+
+        nextButton = findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(v -> {
+            //get next file
+            getNewUser(1);
+        });
 
         //get tutor username
         tutorUsername = getIntent().getStringExtra("username");
@@ -104,57 +158,6 @@ public class TutorViewPending extends AppCompatActivity {
             startActivity(intent1);
             finish();
         });
-
-        //ALL THE DIFFERENT BUTTONS
-        Button approveButton = findViewById(R.id.approveButton);
-        approveButton.setOnClickListener(v -> {
-            if (!pendingFiles.isEmpty()){
-                //Set the user to be approved
-                //Set user in the database to be approved
-                dbHelper.approveStudent(tutorUsername, date, startTime, currentFile.getUserName());
-                sendMessage(currentFile.getUserName(), "approved");
-                //Removal taken care of in function
-
-                pendingFileCounter -= 1;
-                //If there's not more remaining files show a message
-                if (pendingFiles.isEmpty()){
-                    updateScreenNoMoreFiles();
-                } else {
-                    //else get the next file
-                    getNewUser(1);
-                }
-            }
-        });
-
-        Button rejectButton = findViewById(R.id.rejectButton);
-        rejectButton.setOnClickListener(v -> {
-            if (!pendingFiles.isEmpty()){
-                //Set the user to be approved
-                //Set user in the database to be approved
-                dbHelper.rejectStudent(tutorUsername, date, startTime, currentFile.getUserName());
-                sendMessage(currentFile.getUserName(), "rejected");
-
-                //If there's not more remaining files show a message
-                if (pendingFiles == null || pendingFiles.isEmpty()){
-                    updateScreenNoMoreFiles();
-                } else {
-                    //else get the next file
-                    getNewUser(1);
-                }
-            }
-        });
-
-        Button prevButton = findViewById(R.id.prevButton);
-        prevButton.setOnClickListener(v -> {
-            //get previous file
-            getNewUser(-1);
-        });
-
-        Button nextButton = findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(v -> {
-            //get next file
-            getNewUser(1);
-        });
     }
 
     private void getNewUser(int direction){
@@ -185,16 +188,26 @@ public class TutorViewPending extends AppCompatActivity {
         displayLastName.setText(temp);
         temp = "Phone Number: " + currentFile.getPhoneNumber();
         displayPhoneNumber.setText(temp);
+
+        approveButton.setVisibility(View.VISIBLE);
+        rejectButton.setVisibility(View.VISIBLE);
+        prevButton.setVisibility(View.VISIBLE);
+        nextButton.setVisibility(View.VISIBLE);
     }
 
     //set the screen to just be blank with a line saying that there's no more files
     private void updateScreenNoMoreFiles(){
         String tempText = " ";
         displayFirstName.setText(tempText);
-        tempText = "No more Session Applications Remain.";
+        tempText = "No more Session Applications Remain. Please enter a valid date and time above.";
         displayLastName.setText(tempText);
         tempText = " ";
         displayPhoneNumber.setText(tempText);
+
+        approveButton.setVisibility(View.GONE);
+        rejectButton.setVisibility(View.GONE);
+        prevButton.setVisibility(View.GONE);
+        nextButton.setVisibility(View.GONE);
     }
 
     private void sendMessage(String email, String decision){
