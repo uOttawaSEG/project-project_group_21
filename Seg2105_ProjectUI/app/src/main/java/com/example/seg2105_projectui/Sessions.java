@@ -14,5 +14,15 @@ public class Sessions implements Serializable {
         this.startTime = startTime;
     }
 
+    public String getDate() {
+        return date;
+    }
 
+    public String getTutorUsername() {
+        return tutorUsername;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
 }

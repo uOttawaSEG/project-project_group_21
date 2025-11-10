@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class TutorManageSessionsActivity extends AppCompatActivity {
 
-    private Tutor loggedInTutor;
+    private String loggedInTutor;
     private List<Sessions> tutorSessions;
     private int currentSessionIndex;
     private DatabaseHelper dbHelper;
@@ -32,10 +32,10 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        loggedInTutor = (Tutor) getIntent().getSerializableExtra("LOGGED_IN_TUTOR");
+        loggedInTutor = getIntent().getStringExtra("username");
 
         // error check
-        if (loggedInTutor == null) {
+        if (loggedInTutor == null || loggedInTutor.isEmpty()) {
             Toast.makeText(this, "Error: No tutor data found. Returning to previous screen.", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -74,9 +74,11 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
 
     private void loadSessionsFromDatabase() {
-        tutorSessions = dbHelper.getTutorSessions(loggedInTutor.getUserName());
+        tutorSessions = dbHelper.getTutorSessions(loggedInTutor);
 
-        if (currentSessionIndex >= tutorSessions.size()) {
+        if (tutorSessions == null || tutorSessions.isEmpty()) {
+            currentSessionIndex = -1;
+        } else if (currentSessionIndex >= tutorSessions.size()) {
             currentSessionIndex = tutorSessions.size() - 1;
         }
         updateDisplay();
@@ -113,7 +115,7 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
             String dateStr = editDate.getText().toString().trim();
             String startTimeStr = editStartTime.getText().toString().trim();
 
-            
+
             if (dateStr.isEmpty() || startTimeStr.isEmpty()) {
                 Toast.makeText(this, "Please fill Date and Start Time.", Toast.LENGTH_SHORT).show();
                 return;
@@ -138,7 +140,7 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
             }
 
             // 3. If all validation passes, create the session
-            dbHelper.createSession(loggedInTutor.getUserName(), dateStr, startTimeStr);
+            dbHelper.createSession(loggedInTutor, dateStr, startTimeStr);
             loadSessionsFromDatabase();
             currentSessionIndex = tutorSessions.size() - 1;
             updateDisplay();

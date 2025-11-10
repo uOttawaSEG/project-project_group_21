@@ -30,6 +30,8 @@
         <activity android:name=".AdminViewPending"/>
         <activity android:name=".AdminViewRejections"/>
         <activity android:name=".TutorActivity"/>
+        <activity android:name=".TutorUpcomingSessionsActivity"/>
+        <activity android:name=".TutorPastSessionsActivity"/>
 
     </application>
 
