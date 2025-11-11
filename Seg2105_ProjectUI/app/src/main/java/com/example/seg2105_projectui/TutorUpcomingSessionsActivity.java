@@ -43,6 +43,7 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
         Button nextButton = findViewById(R.id.btnNextUp);
         Button prevButton = findViewById(R.id.btnPrevUp);
         Button backButton = findViewById(R.id.btnBackUp);
+        Button cancelButton = findViewById(R.id.btnCancelSession);
 
         List<Sessions> allSessions = dbHelper.getTutorSessions(tutorUsername);
 
@@ -85,8 +86,25 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        cancelButton.setOnClickListener(v ->{
+            Sessions s = upcomingSessions.get(sessionIndex);
+            cancelSession(s);
+        });
     }
 
+    private void cancelSession(Sessions s){
+
+        ArrayList<String> allStudents = new ArrayList<>(dbHelper.getApprovedStudents(s.getTutorUsername(), s.getDate(), s.getStartTime()));
+
+        for (int i = 0; i < allStudents.size(); i++){ //remove ALL students from the session
+            String studentUsername = allStudents.get(i);
+            dbHelper.cancelStudent(tutorUsername, s.getDate(), s.getStartTime(), studentUsername);
+        }
+
+        //delete the session
+        dbHelper.deleteSession(s);
+    }
     private void showNextSession()
     {
         if (upcomingSessions.isEmpty()) return;

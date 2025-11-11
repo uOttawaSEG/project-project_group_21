@@ -48,6 +48,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_APPROVED_STUDENTS = "approved_students";
     public static final String COLUMN_REJECTED_STUDENTS = "rejected_students";
 
+    public static final String COLUMN_CANCELLED_STUDENTS = "cancelled_students";
+
 
 
 
@@ -88,7 +90,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 +COLUMN_START_TIME + " TEXT, "
                 +COLUMN_PENDING_STUDENTS + " TEXT, "
                 +COLUMN_APPROVED_STUDENTS + " TEXT, "
-                +COLUMN_REJECTED_STUDENTS + " TEXT" + ")";
+                +COLUMN_REJECTED_STUDENTS + " TEXT, "
+                +COLUMN_CANCELLED_STUDENTS + " TEXT" + ")";
         db.execSQL(CREATE_SESSIONS_TABLE);
 
 
@@ -674,6 +677,71 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    //for cancellations (pretty much a reskin of approve and reject, moves a student from approved to cancelled)
+    public void cancelStudent(String tutorUsername, String date, String startTime, String studentUsername){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_APPROVED_STUDENTS, COLUMN_CANCELLED_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
+            String cancelled = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CANCELLED_STUDENTS));
+            List<String> approvedList = stringToList(approved);
+            List<String> cancelledList = stringToList(cancelled);
+
+            approvedList.remove(studentUsername);
+
+            if(!cancelledList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+                cancelledList.add(studentUsername);
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_APPROVED_STUDENTS, listToString(approvedList));//update approved with new string of students (which does not include the studentUsername)
+            values.put(COLUMN_CANCELLED_STUDENTS, listToString(cancelledList));
+            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                    new String[]{tutorUsername, date, startTime});
+
+        }
+
+        cursor.close();
+        db.close();
+    }
+
+    //FOR TESTING PURPOSES ONLY!!
+    public void insertDefaultSessions() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values1 = new ContentValues();
+        values1.put(COLUMN_TUTOR_USERNAME, "tester");
+        values1.put(COLUMN_DATE, "17/12/2025");
+        values1.put(COLUMN_START_TIME, "10:00");
+        values1.put(COLUMN_APPROVED_STUDENTS, "");
+        values1.put(COLUMN_PENDING_STUDENTS, "studentA,studentB");
+        values1.put(COLUMN_CANCELLED_STUDENTS, "");
+
+        ContentValues values2 = new ContentValues();
+        values2.put(COLUMN_TUTOR_USERNAME, "tester");
+        values2.put(COLUMN_DATE, "7/9/2025");
+        values2.put(COLUMN_START_TIME, "14:30");
+        values2.put(COLUMN_APPROVED_STUDENTS, "");
+        values2.put(COLUMN_PENDING_STUDENTS, "studentC");
+        values2.put(COLUMN_CANCELLED_STUDENTS, "");
+
+        ContentValues values3 = new ContentValues();
+        values2.put(COLUMN_TUTOR_USERNAME, "tester");
+        values2.put(COLUMN_DATE, "7/9/2025");
+        values2.put(COLUMN_START_TIME, "14:30");
+        values2.put(COLUMN_APPROVED_STUDENTS, "");
+        values2.put(COLUMN_PENDING_STUDENTS, "studentC");
+        values2.put(COLUMN_CANCELLED_STUDENTS, "");
+
+        db.insert(TABLE_SESSIONS, null, values1);
+        db.insert(TABLE_SESSIONS, null, values2);
+        db.insert(TABLE_SESSIONS, null, values3);
+
+        db.close();
+    }
 
 }
 
