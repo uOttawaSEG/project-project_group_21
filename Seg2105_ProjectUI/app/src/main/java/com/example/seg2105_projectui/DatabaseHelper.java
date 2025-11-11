@@ -518,10 +518,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
 
-                List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
-                List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
-                List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
-
                 String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
 
@@ -608,10 +604,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                     String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
 
-                    List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
-                    List<String> rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
-
-
                     sessions.add(new Sessions(tutorUsername, date, startTime));
                 }
             } while (cursor.moveToNext());
@@ -622,7 +614,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sessions;
     }
 
-    public List<Sessions> allSessions() {//returns ALL sessions that have no approved students as of yet
+    public List<Sessions> allSessions() {//returns ALL sessions
         List<Sessions> sessions = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -647,7 +639,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public boolean sessionOverlap(String tutorUsername, String date, String startTime) {//checks if the given parameters already exist
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_SESSION_ID},
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
@@ -715,6 +707,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
     }
+
+    public List<Sessions> getTutorDay(String tutorUsername, String date) {//retunrs all of a tutors session on that day
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Sessions> sessions = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null,
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=?",
+                new String[]{tutorUsername, date}, null, null, COLUMN_START_TIME + " ASC");//should sort sessions by start time
+
+        if (cursor.moveToFirst()) {
+            do {
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                sessions.add(new Sessions(tutorUsername, date, startTime));
+
+            } while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+
+    }
+
+    public List<Sessions> getDay(String date) {//retunrs all sessions on given day
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Sessions> sessions = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null,
+                COLUMN_DATE + "=?",
+                new String[]{date}, null, null,
+                COLUMN_TUTOR_USERNAME + " ASC, " + COLUMN_START_TIME + " ASC");//should sort sessions by tutorname and starttime??
+
+        if (cursor.moveToFirst()) {
+            do {
+                String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                sessions.add(new Sessions(tutorUsername, date, startTime));
+
+            } while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+
+    }
+
+
 
 }
 
