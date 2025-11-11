@@ -1,6 +1,8 @@
 package com.example.seg2105_projectui;
 
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import java.util.Iterator;
 
 
 import android.view.View;
@@ -14,7 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.net.Uri;
@@ -24,29 +29,21 @@ import android.net.Uri;
 public class TutorViewPending extends AppCompatActivity {
 
     //Displays so i can access them from inside methods
-    private EditText displayTime;
-    private TextView displayFirstName;
-    private TextView displayLastName;
-    private TextView displayPhoneNumber;
+    private TextView displayStatus;
 
     private CalendarView displayDate;
-
-    //the current file or application, it is provided from pendFiles
-    private Member currentFile;
-    //A list of pending users, in Rejections its a list of rejected users
-    private List<String> pendingFiles = null;
-    //counter/iterator to go through pendingFiles
-    private int pendingFileCounter;
 
     private DatabaseHelper dbHelper;
 
     private String tutorUsername;
 
-    private Button approveButton, rejectButton, prevButton, nextButton;
+    private Button btnSeeSession;
 
     private Button TEMPFakeStudentJoin;
 
-    String date, startTime;
+    private String date, startTime;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd");
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,107 +53,18 @@ public class TutorViewPending extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         //SET UP TEXT FILES; every line is a display, this allows you to change them easily
-        displayTime = findViewById(R.id.timeSelector);
         displayDate = findViewById(R.id.calendarView);
-        displayFirstName = findViewById(R.id.displayFirstName);
-        displayLastName = findViewById(R.id.displayLastName);
-        displayPhoneNumber = findViewById(R.id.displayPhone);
-        date = "";
-        startTime ="";
+        displayStatus = findViewById(R.id.displayStatus);
+        btnSeeSession = findViewById(R.id.btnSeeSession);
 
-        //ALL THE DIFFERENT BUTTONS -> moved up to prevent null crash when temp is called
-        approveButton = findViewById(R.id.approveButton);
-        approveButton.setOnClickListener(v -> {
-            if (!pendingFiles.isEmpty()){
-                //Set the user to be approved
-                //Set user in the database to be approved
-                dbHelper.approveStudent(tutorUsername, date, startTime, currentFile.getUserName());
-                sendMessage(currentFile.getUserName(), "approved");
-                //Removal taken care of in function
-
-                pendingFileCounter -= 1;
-                //If there's not more remaining files show a message
-                if (pendingFiles.isEmpty()){
-                    updateScreenNoMoreFiles();
-                } else {
-                    //else get the next file
-                    getNewUser(1);
-                }
-            }
+        //button for going to the see sessions page
+        btnSeeSession.setOnClickListener(v -> {
+            Intent intent1 = new Intent(TutorViewPending.this, TutorViewRequests.class);
+            intent1.putExtra("username", tutorUsername);
+            intent1.putExtra("date", date);
+            startActivity(intent1);
+            finish();
         });
-
-        rejectButton = findViewById(R.id.rejectButton);
-        rejectButton.setOnClickListener(v -> {
-            if (!pendingFiles.isEmpty()){
-                //Set the user to be approved
-                //Set user in the database to be approved
-                dbHelper.rejectStudent(tutorUsername, date, startTime, currentFile.getUserName());
-                sendMessage(currentFile.getUserName(), "rejected");
-
-                //If there's not more remaining files show a message
-                if (pendingFiles == null || pendingFiles.isEmpty()){
-                    updateScreenNoMoreFiles();
-                } else {
-                    //else get the next file
-                    getNewUser(1);
-                }
-            }
-        });
-
-        prevButton = findViewById(R.id.prevButton);
-        prevButton.setOnClickListener(v -> {
-            //get previous file
-            getNewUser(-1);
-        });
-
-        nextButton = findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(v -> {
-            //get next file
-            getNewUser(1);
-        });
-
-        //get tutor username
-        tutorUsername = getIntent().getStringExtra("username");
-
-        //TEMP JUST TO DISPLAY NOTHING
-        updateScreenNoMoreFiles();
-
-        //set up files
-        pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
-        pendingFileCounter = 0;
-
-        //get list to iterate through based on time, date + tutor
-        displayDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                //redundant
-                //if (pendingFiles.isEmpty()){
-                //    updateScreenNoMoreFiles();
-                //}
-
-
-                if (startTime.isEmpty() && !pendingFiles.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), "Please enter a start time", Toast.LENGTH_SHORT).show();
-                }
-                //Use YYYY-MM-DD and HH:mm
-                date = year + "--" + (month + 1) + "--" + dayOfMonth;
-                startTime = displayTime.getText().toString().trim();
-
-                //re-call to access db
-                pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
-
-                System.out.println(date);
-                System.out.println(startTime);
-
-
-                if (pendingFiles.isEmpty()){
-                    updateScreenNoMoreFiles();
-                } else {
-                    getNewUser(0);
-                }
-            }
-        });
-
 
         //SET BACK BUTTON
         Button buttonBackToSelection = findViewById(R.id.buttonBackToSelection);
@@ -167,7 +75,32 @@ public class TutorViewPending extends AppCompatActivity {
             finish();
         });
 
+        //get tutor username
+        tutorUsername = getIntent().getStringExtra("username");
 
+        //setup + check for CURRENT date so it doesnt crash on opening
+        Date today = new Date();
+        date = sdf.format(today);
+        checkForTimes(date);
+
+        //get list to iterate through based on time, date + tutor
+        displayDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+
+                //Use YYYY-MM-DD and HH:mm
+                date = year + "-" + (month + 1) + "-" + dayOfMonth;
+
+                //for testing
+                System.out.println(tutorUsername);
+                System.out.println(startTime);
+
+                //check
+                checkForTimes(date);
+            }
+        });
+
+        //for testing
         Button TEMPFakeStudentJoin = findViewById(R.id.tempStudentJoin);
         TEMPFakeStudentJoin.setOnClickListener(v -> {
             List<Sessions> SessionList = dbHelper.sessionsNoStudents();
@@ -176,77 +109,27 @@ public class TutorViewPending extends AppCompatActivity {
                 String tempText = String.valueOf(SessionList.get(i).getStartTime());
                 //displayTime.setText(tempText);
             }
-            pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
-            pendingFileCounter = 0;
-            getNewUser(0);
-
         });
-
-
     }
 
-    private void getNewUser(int direction){
-        //1 forward
-        //-1 backward
-        pendingFileCounter += direction;
+    public void checkForTimes(String date){
+        ArrayList<Sessions> tutorDates = new ArrayList<>(dbHelper.getTutorDay(tutorUsername, date));
+        System.out.println("checktimes started");
 
-        if (pendingFiles.isEmpty()){
-            updateScreenNoMoreFiles();
-        } else {
-            //bounds checking
-            if (pendingFileCounter >= pendingFiles.size()){
-                pendingFileCounter = (pendingFiles.size()-1);
-            }
-            if (pendingFileCounter < 0) {
-                pendingFileCounter = 0;
-            }
-            //set currentFile to be the "new" file
-            currentFile = dbHelper.getStudent((pendingFiles.get(pendingFileCounter)));
-            updateScreen();
+        if (tutorDates.isEmpty()){
+            System.out.println("checktimes no sessions");
+            String tempText = "You have no sessions on this date.";
+            displayStatus.setText(tempText);
+            btnSeeSession.setVisibility(View.GONE);
         }
-    }
+        else{
+            System.out.println("checktimes has sessions");
+            int numSessions = tutorDates.size();
 
-    private void updateScreen(){
-        String temp = "First Name: " + currentFile.getFirstName();
-        displayFirstName.setText(temp);
-        temp = "Last Name: " + currentFile.getLastName();
-        displayLastName.setText(temp);
-        temp = "Phone Number: " + currentFile.getPhoneNumber();
-        displayPhoneNumber.setText(temp);
-
-        approveButton.setVisibility(View.VISIBLE);
-        rejectButton.setVisibility(View.VISIBLE);
-        prevButton.setVisibility(View.VISIBLE);
-        nextButton.setVisibility(View.VISIBLE);
-    }
-
-    //set the screen to just be blank with a line saying that there's no more files
-    private void updateScreenNoMoreFiles(){
-        String tempText = " ";
-        displayFirstName.setText(tempText);
-        tempText = "No more Session Applications Remain. Please enter a valid date and time above.";
-        displayLastName.setText(tempText);
-        tempText = " ";
-        displayPhoneNumber.setText(tempText);
-
-        approveButton.setVisibility(View.GONE);
-        rejectButton.setVisibility(View.GONE);
-        prevButton.setVisibility(View.GONE);
-        nextButton.setVisibility(View.GONE);
-    }
-
-    private void sendMessage(String email, String decision){
-        try {
-            Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
-            sendEmail.setData(Uri.parse("mailto:"));
-            sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
-            sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Decision made about your application");
-            sendEmail.putExtra(Intent.EXTRA_TEXT, "Your recent application to the SEG2105 tutoring and learning system has been " + decision + " by your tutor.");
-            startActivity(sendEmail);
-        } catch (Exception error){
-            //String tempText = error.getMessage();
-            //displayRole.setText(tempText);
-            // error with sending message
+            String temp = "You have " + numSessions + " session requests for " + date + ".";
+            displayStatus.setText(temp);
+            btnSeeSession.setVisibility(View.VISIBLE);
         }
+
     }
 }

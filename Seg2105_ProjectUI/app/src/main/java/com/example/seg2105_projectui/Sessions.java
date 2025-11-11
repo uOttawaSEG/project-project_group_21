@@ -25,4 +25,5 @@ public class Sessions implements Serializable {
     public String getStartTime() {
         return startTime;
     }
+
 }

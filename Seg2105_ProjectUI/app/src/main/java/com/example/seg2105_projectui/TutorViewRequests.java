@@ -1,90 +1,111 @@
 package com.example.seg2105_projectui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-
-
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.net.Uri;
 
-
-
-public class AdminViewPending extends AppCompatActivity {
+public class TutorViewRequests extends AppCompatActivity {
 
     //Displays so i can access them from inside methods
-    private TextView displayRole;
     private TextView displayFirstName;
     private TextView displayLastName;
     private TextView displayPhoneNumber;
     private TextView displayUsername;
-    private TextView displayCoursesANDBlank;
-    private TextView displayDegreeANDProgram;
 
     //the current file or application, it is provided from pendFiles
     private Member currentFile;
     //A list of pending users, in Rejections its a list of rejected users
-    private List<Member> pendingFiles = null;
+    private List<String> pendingFiles = null;
     //counter/iterator to go through pendingFiles
     private int pendingFileCounter;
 
     private DatabaseHelper dbHelper;
 
+    private String tutorUsername, date, time;
+
+    private Button buttonBackToSelection, approveButton, rejectButton, prevButton, nextButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.admin_view_pending);
+        setContentView(R.layout.activity_tutor_view_pending);
 
         dbHelper = new DatabaseHelper(this);
 
         //SET UP TEXT FILES; every line is a display, this allows you to change them easily
-        displayRole = findViewById(R.id.display_role_pending);
+        Spinner displayTime = findViewById(R.id.pickTime);
         displayFirstName = findViewById(R.id.display_firstname_pending);
         displayLastName = findViewById(R.id.display_lastName_pending);
         displayPhoneNumber = findViewById(R.id.display_phone_pending);
         displayUsername = findViewById(R.id.display_username_pending);
-        displayCoursesANDBlank = findViewById(R.id.display_coursesOffered_pending);
-        displayDegreeANDProgram = findViewById(R.id.display_highestDegree_pending);
 
+        tutorUsername = getIntent().getStringExtra("username");
+        date = getIntent().getStringExtra("date");
 
-        pendingFiles = dbHelper.getUsersByStatusList(0);
-        pendingFileCounter = 0;
+        //set up time picker
+        ArrayList<Sessions> tutorDates = new ArrayList<>(dbHelper.getTutorDay(tutorUsername, date));
+        String[] allStartTimes = new String[tutorDates.size()];
 
-        if (pendingFiles.isEmpty()){
-            updateScreenNoMoreFiles();
-        } else {
-            getNewUser(0);
+        for (int i = 0; i < tutorDates.size(); i++){
+            Sessions current = tutorDates.get(i);
+            allStartTimes[i] = (current.getStartTime());
         }
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, allStartTimes);
+        displayTime.setAdapter(adapter); //put the list of all times into the dropdown
+
+        //for selection in the time picker
+        displayTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                time = (String) parent.getItemAtPosition(position);
+                pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, time);
+                pendingFileCounter = 0;
+                getNewUser(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                time = (String) parent.getItemAtPosition(0);
+                pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, time);
+                pendingFileCounter = 0;
+                getNewUser(0);
+            }
+        });
+
         //SET BACK BUTTON
-        Button buttonBackToSelection = findViewById(R.id.buttonBackToSelection);
+        buttonBackToSelection = findViewById(R.id.buttonBackToSelection);
         buttonBackToSelection.setOnClickListener(v -> {
-            Intent intent1 = new Intent(AdminViewPending.this, AdminSelect.class);
+            Intent intent1 = new Intent(TutorViewRequests.this, TutorViewPending.class);
+            intent1.putExtra("username", tutorUsername);
             startActivity(intent1);
             finish();
         });
 
         //ALL THE DIFFERENT BUTTONS
-        Button approveButton = findViewById(R.id.approveButton);
+        approveButton = findViewById(R.id.approveButton);
         approveButton.setOnClickListener(v -> {
             if (!pendingFiles.isEmpty()){
                 //Set the user to be approved
                 //Set user in the database to be approved
-                dbHelper.approveUser(currentFile.getUserName());
+                dbHelper.rejectStudent(tutorUsername, date, time, currentFile.getUserName());
                 sendMessage(currentFile.getUserName(), "approved");
-                //Remove from the file list
-
                 pendingFiles.remove(pendingFileCounter);
                 pendingFileCounter -= 1;
+
                 //If there's not more remaining files show a message
                 if (pendingFiles.isEmpty()){
                     updateScreenNoMoreFiles();
@@ -95,17 +116,16 @@ public class AdminViewPending extends AppCompatActivity {
             }
         });
 
-        Button rejectButton = findViewById(R.id.rejectButton);
+        rejectButton = findViewById(R.id.rejectButton);
         rejectButton.setOnClickListener(v -> {
             if (!pendingFiles.isEmpty()){
                 //Set the user to be approved
                 //Set user in the database to be approved
-                dbHelper.rejectUser(currentFile.getUserName());
+                dbHelper.rejectStudent(tutorUsername, date, time, currentFile.getUserName());
                 sendMessage(currentFile.getUserName(), "rejected");
-                //Remove from the file list
-
                 pendingFiles.remove(pendingFileCounter);
                 pendingFileCounter -= 1;
+
                 //If there's not more remaining files show a message
                 if (pendingFiles.isEmpty()){
                     updateScreenNoMoreFiles();
@@ -116,13 +136,13 @@ public class AdminViewPending extends AppCompatActivity {
             }
         });
 
-        Button prevButton = findViewById(R.id.prevButton);
+        prevButton = findViewById(R.id.prevButton);
         prevButton.setOnClickListener(v -> {
             //get previous file
             getNewUser(-1);
         });
 
-        Button nextButton = findViewById(R.id.nextButton);
+        nextButton = findViewById(R.id.nextButton);
         nextButton.setOnClickListener(v -> {
             //get next file
             getNewUser(1);
@@ -144,16 +164,16 @@ public class AdminViewPending extends AppCompatActivity {
             if (pendingFileCounter < 0) {
                 pendingFileCounter = 0;
             }
+            //get student for currentfile
             //set currentFile to be the "new" file
-            currentFile = pendingFiles.get(pendingFileCounter);
+            String studentName = pendingFiles.get(pendingFileCounter);
+            currentFile = dbHelper.getStudent(studentName);
             updateScreen();
         }
     }
 
     private void updateScreen(){
-        String tempText = "Application Type: " + currentFile.getUserRole();
-        displayRole.setText(tempText);
-        tempText = "First Name: " + currentFile.getFirstName();
+        String tempText = "First Name: " + currentFile.getFirstName();
         displayFirstName.setText(tempText);
         tempText = "Last Name: " + currentFile.getLastName();
         displayLastName.setText(tempText);
@@ -161,37 +181,27 @@ public class AdminViewPending extends AppCompatActivity {
         displayPhoneNumber.setText(tempText);
         tempText = "Username: " + currentFile.getUserName();
         displayUsername.setText(tempText);
-        //check if file is a student or tutor then type cast to fit the specific preferred display
-        if (currentFile.getUserRole().equals("Student")) {
-            Student tempUser = (Student)currentFile;
-            tempText = "Program: " + tempUser.getProgram();
-        } else {
-            Tutor tempUser = (Tutor)currentFile;
-            tempText = "Highest Degree: " + tempUser.getHighestDegree();
-        }
-        displayDegreeANDProgram.setText(tempText);
 
-        if (currentFile.getUserRole().equals("Student")) {
-            tempText = " ";
-        } else {
-            Tutor tempUser = (Tutor)currentFile;
-            tempText = "Courses Offered: " + Arrays.toString(tempUser.getCoursesOffered());
-        }
-        displayCoursesANDBlank.setText(tempText);
+        approveButton.setVisibility(View.VISIBLE);
+        rejectButton.setVisibility(View.VISIBLE);
+        nextButton.setVisibility(View.VISIBLE);
+        prevButton.setVisibility(View.VISIBLE);
     }
 
     //set the screen to just be blank with a line saying that there's no more files
     private void updateScreenNoMoreFiles(){
         String tempText = " ";
-        displayRole.setText(tempText);
         displayFirstName.setText(tempText);
-        tempText = "No more Applications Remain.";
+        tempText = "No more Applications Remain. Please select a new time.";
         displayLastName.setText(tempText);
         tempText = " ";
         displayPhoneNumber.setText(tempText);
         displayUsername.setText(tempText);
-        displayCoursesANDBlank.setText(tempText);
-        displayDegreeANDProgram.setText(tempText);
+
+        approveButton.setVisibility(View.GONE);
+        rejectButton.setVisibility(View.GONE);
+        nextButton.setVisibility(View.GONE);
+        prevButton.setVisibility(View.GONE);
     }
 
     private void sendMessage(String email, String decision){
@@ -208,4 +218,5 @@ public class AdminViewPending extends AppCompatActivity {
             // error with sending message
         }
     }
+
 }

@@ -19,58 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.546" />
 
-    <Button
-        android:id="@+id/rejectButton"
-        android:layout_width="157dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#000000"
-        android:text="Reject Request"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.132"
-        app:layout_constraintStart_toEndOf="@+id/approveButton"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-    <Button
-        android:id="@+id/approveButton"
-        android:layout_width="157dp"
-        android:layout_height="46dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#0D0C0C"
-        android:padding="10dp"
-        android:text="Approve Request"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="105dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#000000"
-        android:text="Next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.679"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rejectButton"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/prevButton"
-        android:layout_width="105dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#000000"
-        android:text="Previous"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/approveButton"
-        app:layout_constraintVertical_bias="0.0" />
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="382dp"
@@ -89,42 +37,16 @@
         <CalendarView
             android:id="@+id/calendarView"
             android:layout_width="wrap_content"
-            android:layout_height="298dp" />
-
-        <EditText
-            android:id="@+id/timeSelector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="time"
-            tools:text="write the time in the format hh:mm" />
+            android:layout_height="322dp" />
 
         <TextView
-            android:id="@+id/displayFirstName"
+            android:id="@+id/displayStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="First Name: [first name]"
+            android:text="Placeholder text here"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="159dp" />
-
-        <TextView
-            android:id="@+id/displayLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Last Name: [last name]"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="205dp" />
-
-        <TextView
-            android:id="@+id/displayPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Phone: [phone]"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="338dp" />
 
 
     </LinearLayout>
@@ -133,13 +55,25 @@
         android:id="@+id/buttonBackToSelection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="88dp"
         android:backgroundTint="@color/black"
         android:text="Go Back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.991" />
+        app:layout_constraintTop_toBottomOf="@+id/btnSeeSession"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/btnSeeSession"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:backgroundTint="@color/black"
+        android:text="View Session Requests"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/tempStudentJoin"

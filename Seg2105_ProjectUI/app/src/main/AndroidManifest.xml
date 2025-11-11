@@ -34,6 +34,7 @@
         <activity android:name=".TutorUpcomingSessionsActivity"/>
         <activity android:name=".TutorPastSessionsActivity"/>
         <activity android:name=".TutorViewPending"/>
+        <activity android:name=".TutorViewRequests"/>
 
     </application>
 

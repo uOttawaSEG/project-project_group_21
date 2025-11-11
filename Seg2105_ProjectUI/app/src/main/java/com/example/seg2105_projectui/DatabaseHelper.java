@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "UserData.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Table Name
     public static final String TABLE_USERS = "users";
@@ -105,14 +105,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues alsotest1 = new ContentValues();
         alsotest1.put(COLUMN_USERNAME, "tester");
         alsotest1.put(COLUMN_PHONE, "1234");
+        alsotest1.put(COLUMN_PASSWORD, "1234");
         alsotest1.put(COLUMN_ROLE, "Student");
 
         db.insert(TABLE_USERS, null, alsotest1);
 
         ContentValues test1 = new ContentValues();
-        test1.put(COLUMN_DATE, "11/9/2025");
+        test1.put(COLUMN_DATE, "2025-11-12");
         test1.put(COLUMN_START_TIME, "10:00");
         test1.put(COLUMN_PENDING_STUDENTS, "tester");
+        test1.put(COLUMN_TUTOR_USERNAME, "a");
 
         db.insert(TABLE_SESSIONS, null, test1);
 
