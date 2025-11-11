@@ -21,7 +21,7 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private String tutorUsername;
 
-    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
