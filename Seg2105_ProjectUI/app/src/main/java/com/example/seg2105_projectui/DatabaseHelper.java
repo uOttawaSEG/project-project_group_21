@@ -51,8 +51,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CANCELLED_STUDENTS = "cancelled_students";
 
 
-
-
     // Tutor-specific columns (can be null for students)
     public static final String COLUMN_DEGREE = "degree";
     public static final String COLUMN_COURSES = "courses"; // Stored as a comma-separated string
@@ -85,13 +83,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String CREATE_SESSIONS_TABLE = "CREATE TABLE " + TABLE_SESSIONS + "("
                 + COLUMN_SESSION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                +COLUMN_TUTOR_USERNAME + " TEXT NOT NULL, "
-                +COLUMN_DATE + " TEXT, "
-                +COLUMN_START_TIME + " TEXT, "
-                +COLUMN_PENDING_STUDENTS + " TEXT, "
-                +COLUMN_APPROVED_STUDENTS + " TEXT, "
-                +COLUMN_REJECTED_STUDENTS + " TEXT, "
-                +COLUMN_CANCELLED_STUDENTS + " TEXT" + ")";
+                + COLUMN_TUTOR_USERNAME + " TEXT NOT NULL, "
+                + COLUMN_DATE + " TEXT, "
+                + COLUMN_START_TIME + " TEXT, "
+                + COLUMN_PENDING_STUDENTS + " TEXT, "
+                + COLUMN_APPROVED_STUDENTS + " TEXT, "
+                + COLUMN_REJECTED_STUDENTS + " TEXT, "
+                + COLUMN_CANCELLED_STUDENTS + " TEXT" + ")";
         db.execSQL(CREATE_SESSIONS_TABLE);
 
 
@@ -183,7 +181,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ... (at the end of your DatabaseHelper.java file, inside the class)
 
     // Method to check if a user exists with the given credentials
-    public void approveUser(String username){
+    public void approveUser(String username) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_ACCOUNT_STATUS, 1);
@@ -210,7 +208,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         };
 
         String selection = COLUMN_USERNAME + " = ?" + " AND " + COLUMN_PASSWORD + " = ?";
-        String[] selectionArgs = { username, password };
+        String[] selectionArgs = {username, password};
 
         Cursor cursor = db.query(TABLE_USERS,
                 columns,
@@ -223,10 +221,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             String role = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));
 
-            if (role.equals("Admin")){
+            if (role.equals("Admin")) {
                 member = new Member(username, password, "", "Admin", "", "System Admin");
-            }
-            else{
+            } else {
                 String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
                 String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
                 String phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
@@ -259,7 +256,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void rejectUser(String username){
+    public void rejectUser(String username) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_ACCOUNT_STATUS, 2);
@@ -273,7 +270,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public Cursor getUsersByStatus(int status){
+    public Cursor getUsersByStatus(int status) {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_USERS,
                 null,
@@ -293,7 +290,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selection = COLUMN_ACCOUNT_STATUS + " = ?";
-        String[] selectionArgs = { String.valueOf(status) };
+        String[] selectionArgs = {String.valueOf(status)};
 
         // Make sure you are querying ALL necessary columns, including role-specific ones
         // like COLUMN_PROGRAM, COLUMN_DEGREE, COLUMN_COURSES
@@ -377,25 +374,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-
     //new sessions methods
 
-    public List<String> stringToList(String str){
-        if (str == null || str.isBlank()){return new ArrayList<>();}//this makes it so i dont need to ever worry if str doesn't exist
+    public List<String> stringToList(String str) {
+        if (str == null || str.isBlank()) {
+            return new ArrayList<>();
+        }//this makes it so i dont need to ever worry if str doesn't exist
         return new ArrayList<>(Arrays.asList(str.split(",")));
     }
 
     //
 
-    public String listToString(List<String> list){
+    public String listToString(List<String> list) {
         return String.join(",", list);
     }
 
 
-
-
-    public void createSession(String tutorUsername, String data, String startTime){//stores session in database given parameters
+    public void createSession(String tutorUsername, String data, String startTime) {//stores session in database given parameters
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -422,18 +417,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void studentPending(String tutorUsername, String date, String startTime, String studentUsername){//adds student to a sessions waitlist
+    public void studentPending(String tutorUsername, String date, String startTime, String studentUsername) {//adds student to a sessions waitlist
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS},
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
             List<String> pendingList = stringToList(pending);
 
 
-            if(!pendingList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+            if (!pendingList.contains(studentUsername)) {//best to not have duplicates //because that would make removal annoying
                 pendingList.add(studentUsername);
             }
 
@@ -450,13 +445,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void approveStudent(String tutorUsername, String date, String startTime, String studentUsername){//moves student from pending to approved list
+    public void approveStudent(String tutorUsername, String date, String startTime, String studentUsername) {//moves student from pending to approved list
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_APPROVED_STUDENTS},
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
             String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
             List<String> pendingList = stringToList(pending);
@@ -464,7 +459,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             pendingList.remove(studentUsername);
 
-            if(!approvedList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+            if (!approvedList.contains(studentUsername)) {//best to not have duplicates //because that would make removal annoying
                 approvedList.add(studentUsername);
             }
 
@@ -480,13 +475,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void rejectStudent(String tutorUsername, String date, String startTime, String studentUsername){
+    public void rejectStudent(String tutorUsername, String date, String startTime, String studentUsername) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_REJECTED_STUDENTS},
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
             String rejected = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS));
             List<String> pendingList = stringToList(pending);
@@ -494,7 +489,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             pendingList.remove(studentUsername);
 
-            if(!rejectedList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+            if (!rejectedList.contains(studentUsername)) {//best to not have duplicates //because that would make removal annoying
                 rejectedList.add(studentUsername);
             }
 
@@ -511,7 +506,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Sessions> getTutorSessions(String tutorUsername){//returns all sessions a specific tutor has
+    public List<Sessions> getTutorSessions(String tutorUsername) {//returns all sessions a specific tutor has
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<Sessions> sessions = new ArrayList<>();
@@ -520,8 +515,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_SESSIONS, null,
                 COLUMN_TUTOR_USERNAME + "=?", new String[]{tutorUsername}, null, null, null);
 
-        if (cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
 
                 List<String> pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
                 List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
@@ -532,7 +527,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 sessions.add(new Sessions(tutorUsername, date, startTime));
 
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
 
         }
 
@@ -541,7 +536,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sessions;
     }
 
-    public List<String> getApprovedStudents(String tutorUsername, String date, String startTime){//returns all approved students of a session
+    public List<String> getApprovedStudents(String tutorUsername, String date, String startTime) {//returns all approved students of a session
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<String> approved = new ArrayList<>();
@@ -550,7 +545,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
         }
 
@@ -560,7 +555,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<String> getRejectedStudents(String tutorUsername, String date, String startTime){
+    public List<String> getRejectedStudents(String tutorUsername, String date, String startTime) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<String> rejected = new ArrayList<>();
@@ -569,7 +564,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             rejected = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REJECTED_STUDENTS)));
         }
 
@@ -579,7 +574,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<String> getPendingStudents(String tutorUsername, String date, String startTime){
+    public List<String> getPendingStudents(String tutorUsername, String date, String startTime) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<String> pending = new ArrayList<>();
@@ -588,7 +583,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             pending = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS)));
         }
 
@@ -598,17 +593,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<Sessions> sessionsNoStudents(){//returns ALL sessions that have no approved students as of yet
+    public List<Sessions> sessionsNoStudents() {//returns ALL sessions that have no approved students as of yet
         List<Sessions> sessions = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_SESSIONS, null, null, null, null, null, null);
 
-        if (cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
 
-                if (approved.isEmpty()){
+                if (approved.isEmpty()) {
                     String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
                     String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                     String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
@@ -619,7 +614,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     sessions.add(new Sessions(tutorUsername, date, startTime));
                 }
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
 
         }
         cursor.close();
@@ -627,31 +622,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sessions;
     }
 
-    public List<Sessions> allSessions(){//returns ALL sessions that have no approved students as of yet
+    public List<Sessions> allSessions() {//returns ALL sessions that have no approved students as of yet
         List<Sessions> sessions = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_SESSIONS, null, null, null, null, null, null);
 
-        if (cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
 
-                    String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
-                    String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
-                    String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
 
-                    sessions.add(new Sessions(tutorUsername, date, startTime));
+                sessions.add(new Sessions(tutorUsername, date, startTime));
 
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
 
         }
         cursor.close();
         db.close();
         return sessions;
     }
-
-
-
 
 
     public boolean sessionOverlap(String tutorUsername, String date, String startTime) {//checks if the given parameters already exist
@@ -667,7 +659,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return overlap;
     }
 
-    public Student getStudent(String studentUsername){//just returns a student object with all a students info from the given username
+    public Student getStudent(String studentUsername) {//just returns a student object with all a students info from the given username
         // only works if student exists so pls check that first
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -677,13 +669,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Student student = null;
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             String password = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PASSWORD));
             String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LAST_NAME));
             String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIRST_NAME));
             String phone = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHONE));
-            String program  = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
-            String role  = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));//must be Student or db explodes
+            String program = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROGRAM));
+            String role = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROLE));//must be Student or db explodes
 
             student = new Student(studentUsername, password, lastName, firstName, phone, role, program);
         }
@@ -694,13 +686,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //for cancellations (pretty much a reskin of approve and reject, moves a student from approved to cancelled)
-    public void cancelStudent(String tutorUsername, String date, String startTime, String studentUsername){
+    public void cancelStudent(String tutorUsername, String date, String startTime, String studentUsername) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_APPROVED_STUDENTS, COLUMN_CANCELLED_STUDENTS},
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
             String cancelled = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CANCELLED_STUDENTS));
             List<String> approvedList = stringToList(approved);
@@ -708,7 +700,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             approvedList.remove(studentUsername);
 
-            if(!cancelledList.contains(studentUsername)){//best to not have duplicates //because that would make removal annoying
+            if (!cancelledList.contains(studentUsername)) {//best to not have duplicates //because that would make removal annoying
                 cancelledList.add(studentUsername);
             }
 

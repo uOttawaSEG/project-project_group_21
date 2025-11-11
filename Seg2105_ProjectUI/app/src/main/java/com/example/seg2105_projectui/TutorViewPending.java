@@ -44,6 +44,8 @@ public class TutorViewPending extends AppCompatActivity {
 
     private Button approveButton, rejectButton, prevButton, nextButton;
 
+    private Button TEMPFakeStudentJoin;
+
     String date, startTime;
 
 
@@ -127,12 +129,13 @@ public class TutorViewPending extends AppCompatActivity {
         displayDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                if (pendingFiles.isEmpty()){
-                    updateScreenNoMoreFiles();
-                }
+                //redundant
+                //if (pendingFiles.isEmpty()){
+                //    updateScreenNoMoreFiles();
+                //}
 
 
-                if (startTime.isEmpty()) {
+                if (startTime.isEmpty() && !pendingFiles.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please enter a start time", Toast.LENGTH_SHORT).show();
                 }
                 //Use YYYY-MM-DD and HH:mm
@@ -163,6 +166,23 @@ public class TutorViewPending extends AppCompatActivity {
             startActivity(intent1);
             finish();
         });
+
+
+        Button TEMPFakeStudentJoin = findViewById(R.id.tempStudentJoin);
+        TEMPFakeStudentJoin.setOnClickListener(v -> {
+            List<Sessions> SessionList = dbHelper.sessionsNoStudents();
+            for (int i = 0; i < SessionList.size(); i++){
+                dbHelper.studentPending(tutorUsername, SessionList.get(i).getDate(), SessionList.get(i).getStartTime(), "Tester");
+                String tempText = String.valueOf(SessionList.get(i).getStartTime());
+                //displayTime.setText(tempText);
+            }
+            pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
+            pendingFileCounter = 0;
+            getNewUser(0);
+
+        });
+
+
     }
 
     private void getNewUser(int direction){
@@ -181,7 +201,7 @@ public class TutorViewPending extends AppCompatActivity {
                 pendingFileCounter = 0;
             }
             //set currentFile to be the "new" file
-            currentFile = dbHelper.getStudent(pendingFiles.get(pendingFileCounter));
+            currentFile = dbHelper.getStudent((pendingFiles.get(pendingFileCounter)));
             updateScreen();
         }
     }
