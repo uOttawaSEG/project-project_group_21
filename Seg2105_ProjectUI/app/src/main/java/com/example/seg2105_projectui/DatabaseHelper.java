@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "UserData.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Table Name
     public static final String TABLE_USERS = "users";
@@ -102,6 +102,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         admin.put(COLUMN_ROLE, "Admin");
 
         db.insert(TABLE_USERS, null, admin);
+
+        //test student
+        ContentValues alsotest1 = new ContentValues();
+        alsotest1.put(COLUMN_USERNAME, "tester");
+        alsotest1.put(COLUMN_PHONE, "1234");
+        alsotest1.put(COLUMN_ROLE, "Student");
+
+        db.insert(TABLE_USERS, null, alsotest1);
+
+        ContentValues test1 = new ContentValues();
+        test1.put(COLUMN_DATE, "11/9/2025");
+        test1.put(COLUMN_START_TIME, "10:00");
+        test1.put(COLUMN_PENDING_STUDENTS, "tester");
+
+        db.insert(TABLE_SESSIONS, null, test1);
+
     }
 
     // This is called when the database needs to be upgraded.
@@ -705,41 +721,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
-    }
-
-    //FOR TESTING PURPOSES ONLY!!
-    public void insertDefaultSessions() {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values1 = new ContentValues();
-        values1.put(COLUMN_TUTOR_USERNAME, "tester");
-        values1.put(COLUMN_DATE, "17/12/2025");
-        values1.put(COLUMN_START_TIME, "10:00");
-        values1.put(COLUMN_APPROVED_STUDENTS, "");
-        values1.put(COLUMN_PENDING_STUDENTS, "studentA,studentB");
-        values1.put(COLUMN_CANCELLED_STUDENTS, "");
-
-        ContentValues values2 = new ContentValues();
-        values2.put(COLUMN_TUTOR_USERNAME, "tester");
-        values2.put(COLUMN_DATE, "7/9/2025");
-        values2.put(COLUMN_START_TIME, "14:30");
-        values2.put(COLUMN_APPROVED_STUDENTS, "");
-        values2.put(COLUMN_PENDING_STUDENTS, "studentC");
-        values2.put(COLUMN_CANCELLED_STUDENTS, "");
-
-        ContentValues values3 = new ContentValues();
-        values2.put(COLUMN_TUTOR_USERNAME, "tester");
-        values2.put(COLUMN_DATE, "7/9/2025");
-        values2.put(COLUMN_START_TIME, "14:30");
-        values2.put(COLUMN_APPROVED_STUDENTS, "");
-        values2.put(COLUMN_PENDING_STUDENTS, "studentC");
-        values2.put(COLUMN_CANCELLED_STUDENTS, "");
-
-        db.insert(TABLE_SESSIONS, null, values1);
-        db.insert(TABLE_SESSIONS, null, values2);
-        db.insert(TABLE_SESSIONS, null, values3);
-
         db.close();
     }
 

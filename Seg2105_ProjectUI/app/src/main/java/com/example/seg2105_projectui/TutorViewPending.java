@@ -131,14 +131,19 @@ public class TutorViewPending extends AppCompatActivity {
                     updateScreenNoMoreFiles();
                 }
 
-                date = dayOfMonth + "/" + (month + 1) + "/" + year;
-                startTime = displayTime.getText().toString().trim();
-
 
                 if (startTime.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please enter a start time", Toast.LENGTH_SHORT).show();
-                    return;
                 }
+
+                date = dayOfMonth + "/" + (month + 1) + "/" + year;
+                startTime = displayTime.getText().toString().trim();
+
+                //re-call to access db
+                pendingFiles = dbHelper.getPendingStudents(tutorUsername, date, startTime);
+
+                System.out.println(date);
+                System.out.println(startTime);
 
 
                 if (pendingFiles.isEmpty()){
