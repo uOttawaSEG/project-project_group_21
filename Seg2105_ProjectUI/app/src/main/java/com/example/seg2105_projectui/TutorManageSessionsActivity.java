@@ -111,10 +111,10 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
                 loadSessionsFromDatabase();
                 updateDisplay();
                 //Toast.makeText(this, "Delete not implemented in DatabaseHelper.", Toast.LENGTH_SHORT).show(); //should be added
-                Toast.makeText(this, "Session Deleted!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Availability Deleted!", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(this, "No session to delete.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No availability to delete.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -136,13 +136,27 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
 
             if (isDateInPast(dateStr)) {
-                Toast.makeText(this, "Cannot create a session for a past date.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Cannot create availability for a past date.", Toast.LENGTH_LONG).show();
                 return;
             }
 
+            if (!isDateValid(dateStr)) {
+                Toast.makeText(this, "Cannot create availability for an invalid date.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if(isOnTheHourOrHalf(dateStr, startTimeStr)){
+                Toast.makeText(this, "Time Slots must start on the hour, or on the half-hour.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if(isValidHour(startTimeStr)){
+                Toast.makeText(this, "Cannot create availability for an invalid.", Toast.LENGTH_LONG).show();
+                return;
+            }
 
             if (isSlotOverlapping(dateStr, startTimeStr)) {
-                Toast.makeText(this, "This time slot overlaps with an existing session.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "This time slot overlaps with an existing session or availability.", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -154,7 +168,8 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
             editDate.setText("");
             editStartTime.setText("");
-            Toast.makeText(this, "New session created!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "New availability created!", Toast.LENGTH_SHORT).show();
+
         });
 
 
@@ -164,7 +179,7 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
 
     private void updateDisplay() {
         if (tutorSessions == null || tutorSessions.isEmpty()) {
-            displayDate.setText("No sessions available.");
+            displayDate.setText("No availability available.");
             displayStartTime.setText("Create one below.");
             displayEndTime.setText("");
             currentSessionIndex = -1;
@@ -193,15 +208,63 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
         return dateStr.compareTo(todayStr) < 0;
     }
 
+    private boolean isDateValid(String dateStr) {
+        int intDate = Integer.parseInt(dateStr.replace("-", ""));
+        int year = intDate/10000;
+        int month = intDate%10000/100;
+        int day = intDate%100;
+        if (month >= 1 && month <= 12){
+            if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
+                return (day >= 1 && day <= 31);
+            } else if (month == 4 || month == 6 || month == 9 || month == 11){
+                return day >= 1 && day <= 30;
+            } else {//if feb
+                if (year%4 == 0){//leap year lol
+                    return day >= 1 && day <= 29;
+                }
+                else {
+                    return day >= 1 && day <= 28;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isOnTheHourOrHalf(String newDate, String newStartTime){
+        int newStartTimeInt = Integer.parseInt(newStartTime.replace(":", ""));
+        return !((newStartTimeInt % 100) % 30 == 0); //return if the minute is either 30 or 00
+    }
+
+    private boolean isValidHour(String newStartTime){
+        int newStartTimeInt = Integer.parseInt(newStartTime.replace(":", ""));
+        return ((newStartTimeInt / 100) >= 23); //return if the time is in the actual day
+    }
+
 
     private boolean isSlotOverlapping(String newDate, String newStartTime) {
         int newStartTimeInt = Integer.parseInt(newStartTime.replace(":", ""));
-        int newEndTimeInt = newStartTimeInt + 100;
+
+        int timeCalc = newStartTimeInt%100;
+        int newEndTimeInt = newStartTimeInt - timeCalc; //gets just the hours
+        timeCalc += 30; //add the 30 min
+        if (timeCalc >= 60){
+            timeCalc += 40; //If it's an hour add 100, then remove 60: 100-60 --> +40
+        }
+        newEndTimeInt += timeCalc;
+
 
         for (Sessions existingSession : tutorSessions) {
             if (existingSession.date.equals(newDate)) {
                 int existingStartTimeInt = Integer.parseInt(existingSession.startTime.replace(":", ""));
-                int existingEndTimeInt = existingStartTimeInt + 100;
+
+                //int existingEndTimeInt = existingStartTimeInt + 100;
+                timeCalc = existingStartTimeInt%100;
+                int existingEndTimeInt = existingStartTimeInt - timeCalc; //gets just the hours
+                timeCalc += 29; //add 29 min so the final hour can overlap allowing b2b sessions
+                if (timeCalc >= 60){
+                    timeCalc += 40; //If it's an hour add 100, then remove 60: 100-60 --> +40
+                }
+                existingEndTimeInt += timeCalc;
 
                 if (newStartTimeInt < existingEndTimeInt && newEndTimeInt > existingStartTimeInt) {
                     return true; // Overlap detected
