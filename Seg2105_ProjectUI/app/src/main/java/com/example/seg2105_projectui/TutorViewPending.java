@@ -135,8 +135,8 @@ public class TutorViewPending extends AppCompatActivity {
                 if (startTime.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please enter a start time", Toast.LENGTH_SHORT).show();
                 }
-
-                date = dayOfMonth + "/" + (month + 1) + "/" + year;
+                //Use YYYY-MM-DD and HH:mm
+                date = year + "--" + (month + 1) + "--" + dayOfMonth;
                 startTime = displayTime.getText().toString().trim();
 
                 //re-call to access db

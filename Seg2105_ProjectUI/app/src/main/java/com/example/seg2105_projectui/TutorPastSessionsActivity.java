@@ -22,7 +22,7 @@ public class TutorPastSessionsActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private String tutorUsername;
 
-    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
