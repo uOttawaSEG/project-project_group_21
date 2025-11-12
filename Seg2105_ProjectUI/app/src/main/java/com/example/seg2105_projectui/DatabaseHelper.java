@@ -733,6 +733,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public List<Sessions> getTutorPending(String tutorUsername, String date) {//retunrs all of a tutors PENDING sessions on that day
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Sessions> sessions = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null,
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=?",
+                new String[]{tutorUsername, date}, null, null, COLUMN_START_TIME + " ASC");//should sort sessions by start time
+
+        if (cursor.moveToFirst()) {
+            do {
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+
+                String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
+                List<String> approvedList = stringToList(approved);
+
+                if (approvedList.isEmpty()){
+                    sessions.add(new Sessions(tutorUsername, date, startTime));
+                }
+
+            } while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+
+    }
+
+
     public List<Sessions> getDay(String date) {//retunrs all sessions on given day
         SQLiteDatabase db = this.getReadableDatabase();
         List<Sessions> sessions = new ArrayList<>();
