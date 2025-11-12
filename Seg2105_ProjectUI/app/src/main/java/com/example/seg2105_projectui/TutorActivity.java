@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -81,6 +82,7 @@ public class TutorActivity extends AppCompatActivity {
                 if (isChecked) {
                     btnApproveSessions.setVisibility(View.GONE); //make the manual approval section inaccessible
                     automaticallyApprove();
+                    Toast.makeText(TutorActivity.this, "All pending sessions are now approved. Please see upcoming or past sessions.", Toast.LENGTH_SHORT).show();
                 } else {
                     btnApproveSessions.setVisibility(View.VISIBLE);
                 }

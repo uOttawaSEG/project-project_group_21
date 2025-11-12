@@ -82,8 +82,17 @@ public class TutorViewPending extends AppCompatActivity {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
 
+                //logic to keep formatting for days consistent
+                String processedDay = "";
+                if (dayOfMonth < 10){
+                    processedDay = "0" + dayOfMonth;
+                }
+                else{
+                    processedDay = String.valueOf(dayOfMonth);
+                }
+
                 //Use YYYY-MM-DD and HH:mm
-                date = year + "-" + (month + 1) + "-" + dayOfMonth;
+                date = year + "-" + (month + 1) + "-" + processedDay;
 
                 //for testing
                 System.out.println(tutorUsername);

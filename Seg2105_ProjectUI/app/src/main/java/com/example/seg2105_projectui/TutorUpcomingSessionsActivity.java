@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -110,7 +112,9 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
 
         //delete the session
         dbHelper.deleteSession(s);
+        Toast.makeText(TutorUpcomingSessionsActivity.this, "Session Cancelled", Toast.LENGTH_SHORT).show();
     }
+
     private void showNextSession()
     {
         if (upcomingSessions.isEmpty()) return;

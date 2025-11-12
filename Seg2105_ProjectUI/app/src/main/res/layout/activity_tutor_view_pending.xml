@@ -96,7 +96,6 @@
             android:id="@+id/display_firstname_pending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Student First Name: [first name]"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="159dp" />
@@ -105,7 +104,7 @@
             android:id="@+id/display_lastName_pending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Student Last Name: [last name]"
+            android:text="No more Applications Remain. Please select a new time."
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="205dp" />
@@ -114,7 +113,6 @@
             android:id="@+id/display_username_pending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Student Username: [username]"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="@+id/linearLayout"
             app:layout_constraintStart_toStartOf="@+id/linearLayout"
@@ -124,7 +122,6 @@
             android:id="@+id/display_phone_pending"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Student Phone: [phone]"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="338dp" />

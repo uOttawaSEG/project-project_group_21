@@ -124,8 +124,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //test student 2
         ContentValues alsotest2 = new ContentValues();
         alsotest2.put(COLUMN_USERNAME, "tester2");
-        alsotest1.put(COLUMN_FIRST_NAME, "prev. tester");
-        alsotest1.put(COLUMN_LAST_NAME, "abc");
+        alsotest2.put(COLUMN_FIRST_NAME, "prev. tester");
+        alsotest2.put(COLUMN_LAST_NAME, "abc");
         alsotest2.put(COLUMN_PHONE, "1234");
         alsotest2.put(COLUMN_PASSWORD, "1234");
         alsotest2.put(COLUMN_ROLE, "Student");
