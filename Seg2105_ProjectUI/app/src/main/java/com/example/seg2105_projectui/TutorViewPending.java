@@ -27,10 +27,6 @@ import android.net.Uri;
 
 
 public class TutorViewPending extends AppCompatActivity {
-
-    //Displays so i can access them from inside methods
-    private TextView displayStatus;
-
     private CalendarView displayDate;
 
     private DatabaseHelper dbHelper;
@@ -54,7 +50,6 @@ public class TutorViewPending extends AppCompatActivity {
 
         //SET UP TEXT FILES; every line is a display, this allows you to change them easily
         displayDate = findViewById(R.id.calendarView);
-        displayStatus = findViewById(R.id.displayStatus);
         btnSeeSession = findViewById(R.id.btnSeeSession);
 
         //button for going to the see sessions page
@@ -78,10 +73,9 @@ public class TutorViewPending extends AppCompatActivity {
         //get tutor username
         tutorUsername = getIntent().getStringExtra("username");
 
-        //setup + check for CURRENT date so it doesnt crash on opening
+        //setup so it doesnt crash on opening
         Date today = new Date();
         date = sdf.format(today);
-        checkForTimes(date);
 
         //get list to iterate through based on time, date + tutor
         displayDate.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -93,43 +87,10 @@ public class TutorViewPending extends AppCompatActivity {
 
                 //for testing
                 System.out.println(tutorUsername);
-                System.out.println(startTime);
+                System.out.println(date);
 
-                //check
-                checkForTimes(date);
-            }
-        });
-
-        //for testing
-        Button TEMPFakeStudentJoin = findViewById(R.id.tempStudentJoin);
-        TEMPFakeStudentJoin.setOnClickListener(v -> {
-            List<Sessions> SessionList = dbHelper.sessionsNoStudents();
-            for (int i = 0; i < SessionList.size(); i++){
-                dbHelper.studentPending(tutorUsername, SessionList.get(i).getDate(), SessionList.get(i).getStartTime(), "Tester");
-                String tempText = String.valueOf(SessionList.get(i).getStartTime());
-                //displayTime.setText(tempText);
             }
         });
     }
 
-    public void checkForTimes(String date){
-        ArrayList<Sessions> tutorDates = new ArrayList<>(dbHelper.getTutorDay(tutorUsername, date));
-        System.out.println("checktimes started");
-
-        if (tutorDates.isEmpty()){
-            System.out.println("checktimes no sessions");
-            String tempText = "You have no sessions on this date.";
-            displayStatus.setText(tempText);
-            btnSeeSession.setVisibility(View.GONE);
-        }
-        else{
-            System.out.println("checktimes has sessions");
-            int numSessions = tutorDates.size();
-
-            String temp = "You have " + numSessions + " session requests for " + date + ".";
-            displayStatus.setText(temp);
-            btnSeeSession.setVisibility(View.VISIBLE);
-        }
-
-    }
 }

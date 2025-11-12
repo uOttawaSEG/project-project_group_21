@@ -39,6 +39,8 @@ public class TutorViewRequests extends AppCompatActivity {
 
     private Button buttonBackToSelection, approveButton, rejectButton, prevButton, nextButton;
 
+    private ArrayList<Sessions> tutorDates;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutor_view_pending);
@@ -56,7 +58,7 @@ public class TutorViewRequests extends AppCompatActivity {
         date = getIntent().getStringExtra("date");
 
         //set up time picker
-        ArrayList<Sessions> tutorDates = new ArrayList<>(dbHelper.getTutorDay(tutorUsername, date));
+        tutorDates = new ArrayList<>(dbHelper.getTutorDay(tutorUsername, date));
         String[] allStartTimes = new String[tutorDates.size()];
 
         for (int i = 0; i < tutorDates.size(); i++){

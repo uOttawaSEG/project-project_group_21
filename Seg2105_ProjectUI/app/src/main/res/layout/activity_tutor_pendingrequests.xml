@@ -9,7 +9,7 @@
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pending Requests"
+        android:text="Select A Date To View Requests"
         android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -38,15 +38,6 @@
             android:id="@+id/calendarView"
             android:layout_width="wrap_content"
             android:layout_height="322dp" />
-
-        <TextView
-            android:id="@+id/displayStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Placeholder text here"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="159dp" />
 
 
     </LinearLayout>
