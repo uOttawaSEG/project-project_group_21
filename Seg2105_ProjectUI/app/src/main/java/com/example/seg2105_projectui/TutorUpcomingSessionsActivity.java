@@ -2,6 +2,7 @@ package com.example.seg2105_projectui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,7 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private String tutorUsername;
 
-    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm");
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,11 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
                 {
                     upcomingSessions.add(s);
                 }
+                Log.d("SessionCheck", "Session: " + s.getDate() + " " + s.getStartTime());
+                Log.d("ApprovedList", approved.toString());
+                Log.d("Now", now.toString());
+                Log.d("Parsed", sessionDateTime != null ? sessionDateTime.toString() : "null");
+
             }
             catch (ParseException e)
             {
