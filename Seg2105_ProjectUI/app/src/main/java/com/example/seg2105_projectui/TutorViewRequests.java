@@ -103,7 +103,7 @@ public class TutorViewRequests extends AppCompatActivity {
             if (!pendingFiles.isEmpty()){
                 //Set the user to be approved
                 //Set user in the database to be approved
-                dbHelper.rejectStudent(tutorUsername, date, time, currentFile.getUserName());
+                dbHelper.approveStudent(tutorUsername, date, time, currentFile.getUserName());
                 sendMessage(currentFile.getUserName(), "approved");
                 pendingFiles.remove(pendingFileCounter);
                 pendingFileCounter -= 1;

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.seg2105_projectui.Member;
 import com.example.seg2105_projectui.Tutor;
@@ -22,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "UserData.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     // Table Name
     public static final String TABLE_USERS = "users";
@@ -101,9 +102,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.insert(TABLE_USERS, null, admin);
 
-        //test student
+        //test student 1
         ContentValues alsotest1 = new ContentValues();
         alsotest1.put(COLUMN_USERNAME, "tester");
+        alsotest1.put(COLUMN_FIRST_NAME, "upcoming tester");
+        alsotest1.put(COLUMN_LAST_NAME, "abc");
         alsotest1.put(COLUMN_PHONE, "1234");
         alsotest1.put(COLUMN_PASSWORD, "1234");
         alsotest1.put(COLUMN_ROLE, "Student");
@@ -114,9 +117,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         test1.put(COLUMN_DATE, "2025-11-12");
         test1.put(COLUMN_START_TIME, "10:00");
         test1.put(COLUMN_PENDING_STUDENTS, "tester");
-        test1.put(COLUMN_TUTOR_USERNAME, "a");
+        test1.put(COLUMN_TUTOR_USERNAME, "testTutor");
 
         db.insert(TABLE_SESSIONS, null, test1);
+
+        //test student 2
+        ContentValues alsotest2 = new ContentValues();
+        alsotest2.put(COLUMN_USERNAME, "tester2");
+        alsotest1.put(COLUMN_FIRST_NAME, "prev. tester");
+        alsotest1.put(COLUMN_LAST_NAME, "abc");
+        alsotest2.put(COLUMN_PHONE, "1234");
+        alsotest2.put(COLUMN_PASSWORD, "1234");
+        alsotest2.put(COLUMN_ROLE, "Student");
+
+        db.insert(TABLE_USERS, null, alsotest2);
+
+        ContentValues test2 = new ContentValues();
+        test2.put(COLUMN_DATE, "2025-11-09");
+        test2.put(COLUMN_START_TIME, "10:00");
+        test2.put(COLUMN_PENDING_STUDENTS, "tester2");
+        test2.put(COLUMN_TUTOR_USERNAME, "testTutor");
+
+        db.insert(TABLE_SESSIONS, null, test2);
+
 
     }
 
@@ -452,7 +475,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(TABLE_SESSIONS, new String[]{COLUMN_PENDING_STUDENTS, COLUMN_APPROVED_STUDENTS},
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
-
         if (cursor.moveToFirst()) {
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
             String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
