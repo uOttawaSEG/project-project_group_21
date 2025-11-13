@@ -105,7 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //test student 1
         ContentValues alsotest1 = new ContentValues();
         alsotest1.put(COLUMN_USERNAME, "tester");
-        alsotest1.put(COLUMN_FIRST_NAME, "upcoming tester");
+        alsotest1.put(COLUMN_FIRST_NAME, "cancel this tester");
         alsotest1.put(COLUMN_LAST_NAME, "abc");
         alsotest1.put(COLUMN_PHONE, "1234");
         alsotest1.put(COLUMN_PASSWORD, "1234");
@@ -114,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_USERS, null, alsotest1);
 
         ContentValues test1 = new ContentValues();
-        test1.put(COLUMN_DATE, "2025-11-12");
+        test1.put(COLUMN_DATE, "2025-11-13");
         test1.put(COLUMN_START_TIME, "10:00");
         test1.put(COLUMN_PENDING_STUDENTS, "tester");
         test1.put(COLUMN_TUTOR_USERNAME, "testTutor");
@@ -124,7 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //test student 2
         ContentValues alsotest2 = new ContentValues();
         alsotest2.put(COLUMN_USERNAME, "tester2");
-        alsotest2.put(COLUMN_FIRST_NAME, "prev. tester");
+        alsotest2.put(COLUMN_FIRST_NAME, "approve this tester (will go to past)");
         alsotest2.put(COLUMN_LAST_NAME, "abc");
         alsotest2.put(COLUMN_PHONE, "1234");
         alsotest2.put(COLUMN_PASSWORD, "1234");
@@ -140,7 +140,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.insert(TABLE_SESSIONS, null, test2);
 
+        //test student 3
+        ContentValues alsotest3 = new ContentValues();
+        alsotest3.put(COLUMN_USERNAME, "tester3");
+        alsotest3.put(COLUMN_FIRST_NAME, "approve this tester");
+        alsotest3.put(COLUMN_LAST_NAME, "abc");
+        alsotest3.put(COLUMN_PHONE, "1234");
+        alsotest3.put(COLUMN_PASSWORD, "1234");
+        alsotest3.put(COLUMN_ROLE, "Student");
 
+        db.insert(TABLE_USERS, null, alsotest3);
+
+        ContentValues test3 = new ContentValues();
+        test3.put(COLUMN_DATE, "2025-11-14");
+        test3.put(COLUMN_START_TIME, "10:00");
+        test3.put(COLUMN_PENDING_STUDENTS, "tester3");
+        test3.put(COLUMN_TUTOR_USERNAME, "testTutor");
+
+        db.insert(TABLE_SESSIONS, null, test3);
     }
 
     // This is called when the database needs to be upgraded.
