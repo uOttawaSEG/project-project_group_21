@@ -45,6 +45,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TUTOR_USERNAME = "tutor_username";
     public static final String COLUMN_DATE = "date";//idk how to make dates work in this
     public static final String COLUMN_START_TIME = "start_time";//idk how to make time work in this
+
+    public static final String COLUMN_COURSE = "course";//pls use 'SEG 2222' format
+    public static final String COLUMN_STATUS = "status";//should only be approved or pending
+
     public static final String COLUMN_PENDING_STUDENTS = "pending_students";//do lists work in this????
     public static final String COLUMN_APPROVED_STUDENTS = "approved_students";
     public static final String COLUMN_REJECTED_STUDENTS = "rejected_students";
@@ -87,6 +91,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_TUTOR_USERNAME + " TEXT NOT NULL, "
                 + COLUMN_DATE + " TEXT, "
                 + COLUMN_START_TIME + " TEXT, "
+                + COLUMN_COURSE + " TEXT, "
+                + COLUMN_STATUS + " TEXT, "//boolean
                 + COLUMN_PENDING_STUDENTS + " TEXT, "
                 + COLUMN_APPROVED_STUDENTS + " TEXT, "
                 + COLUMN_REJECTED_STUDENTS + " TEXT, "
@@ -432,13 +438,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void createSession(String tutorUsername, String data, String startTime) {//stores session in database given parameters
+    public void createSession(String tutorUsername, String date, String startTime, String course, String status) {//stores session in database given parameters
+        //when using this make sure there are no already approved students/sessions
+        //so status should always be 'Pending'
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put(COLUMN_TUTOR_USERNAME, tutorUsername);
-        values.put(COLUMN_DATE, data);
+        values.put(COLUMN_DATE, date);
         values.put(COLUMN_START_TIME, startTime);
+
+        values.put(COLUMN_COURSE, course);
+        values.put(COLUMN_STATUS, status);
 
         values.put(COLUMN_PENDING_STUDENTS, "");
         values.put(COLUMN_APPROVED_STUDENTS, "");
@@ -561,8 +572,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
 
-                sessions.add(new Sessions(tutorUsername, date, startTime));
+                sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
 
             } while (cursor.moveToNext());
 
@@ -644,8 +657,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
                     String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                     String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                    String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+                    String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
 
-                    sessions.add(new Sessions(tutorUsername, date, startTime));
+                    sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
                 }
             } while (cursor.moveToNext());
 
@@ -667,8 +682,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
                 String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
 
-                sessions.add(new Sessions(tutorUsername, date, startTime));
+                sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
 
             } while (cursor.moveToNext());
 
@@ -760,7 +777,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
-                sessions.add(new Sessions(tutorUsername, date, startTime));
+                String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+
+                sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
 
             } while (cursor.moveToNext());
 
@@ -788,7 +808,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 List<String> approvedList = stringToList(approved);
 
                 if (approvedList.isEmpty()){
-                    sessions.add(new Sessions(tutorUsername, date, startTime));
+                    String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+                    String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+
+                    sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
                 }
 
             } while (cursor.moveToNext());
@@ -815,7 +838,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
-                sessions.add(new Sessions(tutorUsername, date, startTime));
+                String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+                String status = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+
+                sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
 
             } while (cursor.moveToNext());
 
@@ -829,6 +855,79 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-}
+
+    public List<Sessions> searchSession(String course) {//retunrs all avalible (pending) sessions given course Code
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Sessions> sessions = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null,
+                COLUMN_COURSE + "=? AND " + COLUMN_STATUS + "=?" , //COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=?"
+                new String[]{course, "Pending"}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+
+                sessions.add(new Sessions(tutorUsername, date, startTime, course, "Pending"));
+
+            } while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+
+    }
+
+
+    public List<Sessions> studentSessions (String studentUserName, String status) {//retunrs all Approved sessions for given student and status
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Sessions> sessions = new ArrayList<>();
+
+        Cursor cursor = db.query(TABLE_SESSIONS, null,
+                COLUMN_STATUS + "=?",
+                new String[]{status}, null, null, null);//should sort sessions by tutorname and starttime??
+
+        if (cursor.moveToFirst()) {
+            do {
+                String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
+                List<String> approvedList = stringToList(approved);
+
+                for (int i = 0; i<approvedList.toArray().length; i++){
+                    if (approvedList.get(i).equals(studentUserName)){
+                        String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                        String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                        String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                        String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+
+                        sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
+                    }
+                }
+
+
+            } while (cursor.moveToNext());
+
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+
+    }
+
+
+    public List<Sessions> validPendingSessions(String studentUserName, String startTime, String date) {
+        //retunrs all valid and approved sessions for given student and given current time
+        List<Sessions> sessions = new ArrayList<>();
+
+        return sessions;
+
+    }
+
+
+    }
 
 
