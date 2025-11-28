@@ -883,7 +883,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Sessions> studentSessions (String studentUserName, String status) {//retunrs all Approved sessions for given student and status
+    public List<Sessions> studentSessions (String studentUserName, String status) {//retunrs all sessions for given student and status
         SQLiteDatabase db = this.getReadableDatabase();
         List<Sessions> sessions = new ArrayList<>();
 
@@ -919,9 +919,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Sessions> validPendingSessions(String studentUserName, String startTime, String date) {
-        //retunrs all valid and approved sessions for given student and given current time
-        List<Sessions> sessions = new ArrayList<>();
+    public List<Sessions> validApprovedSessions(String studentUserName, String time, String date) {
+        //retunrs all approved sessions for given student and given current time that is MORe than 24 hours before startTime
+        List<Sessions> sessions = studentSessions (studentUserName, "Pending") ;
 
         return sessions;
 
