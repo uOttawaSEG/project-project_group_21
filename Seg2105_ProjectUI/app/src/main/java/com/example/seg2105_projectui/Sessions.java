@@ -24,6 +24,10 @@ public class Sessions implements Serializable {
         return date;
     }
 
+    public String getCourse() {
+        return course;
+    }
+
     public String getTutorUsername() {
         return tutorUsername;
     }
@@ -31,6 +35,8 @@ public class Sessions implements Serializable {
     public String getStartTime() {
         return startTime;
     }
+
+    public String getStatus() { return status; }
 
     public void setApproved() {
         status = "Approved";
