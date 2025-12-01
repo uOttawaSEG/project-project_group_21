@@ -10,6 +10,8 @@ public class Tutor extends Member implements Serializable {
     private String[] coursesOffered;
     private List<Sessions> sessions;
 
+    public int rating = 0;
+
 
     public Tutor(String userName, String userPassword, String userLastName, String userFirstName, String userPhoneNumber, String userRole, String userHighestDegree, String[] userCoursesOffered){
 
@@ -40,12 +42,16 @@ public class Tutor extends Member implements Serializable {
         return sessions;
     }
 
+    public int getRating(){
+        return this.rating;
+    }
+
     public void setSessions(List<Sessions> sessions) {
         this.sessions = sessions;
     }
 
-    public void createNewSession(String date, String startTime) {
-        Sessions newSession = new Sessions(this.getUserName(), date, startTime);
+    public void createNewSession(String date, String startTime, String course, String status) {
+        Sessions newSession = new Sessions(this.getUserName(), date, startTime, course, status);
         if (this.sessions == null) {
             this.sessions = new ArrayList<>();
         }
