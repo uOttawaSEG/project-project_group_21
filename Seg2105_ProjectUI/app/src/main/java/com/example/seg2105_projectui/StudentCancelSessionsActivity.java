@@ -39,8 +39,7 @@ public class StudentCancelSessionsActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         //get student username code, kinda forgot how to do it so gl
-        Intent intent = getIntent();
-        currentStudentUsername = intent.getStringExtra("STUDENT_USERNAME");
+        currentStudentUsername = getIntent().getStringExtra("username");
         if (currentStudentUsername == null) {
             //fallback - change this if need be
             currentStudentUsername = "tester"; // For testing
@@ -50,7 +49,7 @@ public class StudentCancelSessionsActivity extends AppCompatActivity {
 
         loadSessions();
 
-        //setupButtonListeners();
+        setupButtonListeners();
 
         //display first session if available
         if (!pendingSessions.isEmpty())
@@ -83,13 +82,12 @@ public class StudentCancelSessionsActivity extends AppCompatActivity {
     }
 
     //this will work once studentactivity is made
-    /*
     private void setupButtonListeners() {
         Button btnBack = findViewById(R.id.button_back);
         btnBack.setOnClickListener(v -> {
-            Intent intent = new Intent(StudentCancelSessionsActivity.this, StudentActivity.class);
-            intent.putExtra("STUDENT_USERNAME", currentStudentUsername);
-            startActivity(intent);
+            Intent backToDash = new Intent(StudentCancelSessionsActivity.this, StudentDashboardActivity.class);
+            backToDash.putExtra("username", currentStudentUsername);
+            startActivity(backToDash);
             finish();
         });
 
@@ -102,7 +100,6 @@ public class StudentCancelSessionsActivity extends AppCompatActivity {
         Button btnPrev = findViewById(R.id.button_prev);
         btnPrev.setOnClickListener(v -> showPreviousSession());
     }
-     */
 
     private void displaySession(int index, String sessionType) {
         if (sessionType.equals("pending") && index < pendingSessions.size())

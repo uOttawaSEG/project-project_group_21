@@ -67,9 +67,9 @@ public class StudentViewRequestsActivity extends AppCompatActivity {
         buttonBackToSelection = findViewById(R.id.buttonBackToSelection4);
         buttonBackToSelection.setOnClickListener(v -> {
             //change TutorViewPending to whatever is supposed to connect to this page
-            Intent intent1 = new Intent(StudentViewRequestsActivity.this, TutorViewPending.class);
-            intent1.putExtra("username", studentUsername);
-            startActivity(intent1);
+            Intent backToDash = new Intent(StudentViewRequestsActivity.this, StudentDashboardActivity.class);
+            backToDash.putExtra("username", studentUsername);
+            startActivity(backToDash);
             finish();
         });
     }
