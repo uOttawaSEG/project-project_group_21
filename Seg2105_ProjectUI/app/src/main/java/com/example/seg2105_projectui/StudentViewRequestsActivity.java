@@ -98,7 +98,7 @@ public class StudentViewRequestsActivity extends AppCompatActivity {
         if (dates.isEmpty()){
             Toast.makeText(this, "You have not requested any sessions. Returning to menu.", Toast.LENGTH_SHORT).show();
 
-            Intent intent2 = new Intent(StudentViewRequestsActivity.this, TutorViewPending.class);
+            Intent intent2 = new Intent(StudentViewRequestsActivity.this, StudentDashboardActivity.class);
             intent2.putExtra("username", studentUsername);
             startActivity(intent2);
             finish();
