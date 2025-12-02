@@ -6,15 +6,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import java.util.Date;
-import java.util.Locale;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Locale;
 
-public class TutorManageSessionsActivity extends AppCompatActivity {
+public class StudentSessionSearchActivity extends AppCompatActivity {
 
     private String loggedInTutor;
     private List<Sessions> tutorSessions;

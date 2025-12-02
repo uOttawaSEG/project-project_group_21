@@ -49,6 +49,13 @@ public class    WelcomeActivity extends AppCompatActivity {
                 startActivity(intentTutor);
                 finish();
             }
+            else if (user.getUserRole().equals("Student"))
+            {
+                Intent intentStudent = new Intent(WelcomeActivity.this, StudentDashboardActivity.class);
+                intentStudent.putExtra("username", user.getUserName());
+                startActivity(intentStudent);
+                finish();
+            }
         });
     }
 }

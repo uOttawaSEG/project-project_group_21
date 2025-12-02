@@ -35,6 +35,11 @@
         <activity android:name=".TutorPastSessionsActivity"/>
         <activity android:name=".TutorViewPending"/>
         <activity android:name=".TutorViewRequests"/>
+        <activity android:name=".StudentDashboardActivity"/>
+        <activity android:name=".StudentSessionSearchActivity"/>
+        <activity android:name=".StudentPastSessionsActivity"/>
+        <activity android:name=".StudentCancelSessionsActivity"/>
+        <activity android:name=".StudentViewRequestsActivity"/>
 
     </application>
 
