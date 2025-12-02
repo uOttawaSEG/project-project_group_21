@@ -994,6 +994,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rating/allRatings.length;
     }
 
+
+    public int getNumRaters(String tutorUsername){//returns 0 if no ratings yet
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_RATING},
+                COLUMN_USERNAME + "=? AND " + COLUMN_ROLE + "='Tutor'" ,
+                new String[]{tutorUsername}, null, null, null);
+
+        String s = "";
+
+        double rating = 0;
+
+        if (cursor.moveToFirst()){
+            s = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+        }
+
+        if (s.isEmpty()){
+            return 0;
+        }
+
+        List<String> l = stringToList(s);
+
+        db.close();
+        cursor.close();
+
+        return l.size();
+    }
+
     }
 
 
