@@ -17,6 +17,8 @@ import com.example.seg2105_projectui.Student;
 import com.example.seg2105_projectui.User;
 import com.example.seg2105_projectui.Sessions;
 
+import com.example.seg2105_projectui.StudentPastSessionsActivity;
+
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -1037,17 +1039,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return l.size();
     }
 
-    public boolean studentFinishedSession(String studentUserName, String tutorUsername, String currentDay, String currentTime){//returns true is student has an approved and past session from a tutor
+    public boolean studentFinishedSession(String studentUserName, String tutorUsername){//returns true is student has an approved and past session from a tutor
         List<Sessions> allStudentSessions = studentSessions(studentUserName, "Approved");
         List<Sessions> matchingTutorSessions = new ArrayList<>();
         for (Sessions s: allStudentSessions){
             if(s.getTutorUsername().equals(tutorUsername)){
-                if( true)//sessionPast()){
-                    return true;
-                }
+                if(StudentPastSessionsActivity.hasSessionPast(s)){return true;}
             }
-        return false;
         }
+        return false;
+    }
 
 
 

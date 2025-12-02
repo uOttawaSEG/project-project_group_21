@@ -185,7 +185,7 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
         return passedSessions;
     }
 
-    private boolean hasSessionPast(Sessions session) {
+    public static boolean hasSessionPast(Sessions session) {
         try
         {
             String sessionDateTimeStr = session.date + " " + session.startTime;
