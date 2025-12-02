@@ -46,9 +46,9 @@ public class StudentViewRequestsActivity extends AppCompatActivity {
         studentUsername = getIntent().getStringExtra("username");
 
         //set up the list display
-        approvedDates = new ArrayList<>(dbHelper.studentSessions(studentUsername, "APPROVED"));
-        rejectedDates = new ArrayList<>(dbHelper.studentSessions(studentUsername, "REJECTED"));
-        pendingDates = new ArrayList<>(dbHelper.studentSessions(studentUsername, "PENDING"));
+        approvedDates = new ArrayList<>(dbHelper.studentSessions(studentUsername, "Approved"));
+        rejectedDates = new ArrayList<>(dbHelper.studentSessions(studentUsername, "Rejected"));
+        pendingDates = new ArrayList<>(dbHelper.studentSessions(studentUsername, "Pending"));
 
         allSessions = new ArrayList<>();
         allSessions.addAll(approvedDates);
