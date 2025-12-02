@@ -56,11 +56,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CANCELLED_STUDENTS = "cancelled_students";
 
 
+
     // Tutor-specific columns (can be null for students)
     public static final String COLUMN_DEGREE = "degree";
     public static final String COLUMN_COURSES = "courses"; // Stored as a comma-separated string
 
     public static final String COLUMN_RATING = "rating"; // int from 0 to 5, 0 means unrated, 1 is the lowest it can go
+
+    public static final String COLUMN_RATED = "rated"; //all students who rated
 
 
     //Student specifc
@@ -85,6 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_DEGREE + " TEXT,"
                 + COLUMN_COURSES + " TEXT,"
                 + COLUMN_RATING + " INTEGER,"
+                + COLUMN_RATED + " TEXT,"
                 + COLUMN_PROGRAM + " TEXT,"
                 + COLUMN_ACCOUNT_STATUS + " INTEGER DEFAULT 0" + ")";
         db.execSQL(CREATE_USERS_TABLE);
@@ -196,7 +200,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PHONE, tutor.getPhoneNumber());
         values.put(COLUMN_ROLE, "Tutor"); // Set the role
         values.put(COLUMN_DEGREE, tutor.getHighestDegree());
-        values.put(COLUMN_RATING, tutor.getRating());//
+        values.put(COLUMN_RATING, tutor.getRating());
+        values.put(COLUMN_RATED, "");  //starts empty
         values.put(COLUMN_ACCOUNT_STATUS, 0); //0 by default
 
         // Convert the string array of courses to a single comma-separated string
@@ -459,6 +464,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PENDING_STUDENTS, "");
         values.put(COLUMN_APPROVED_STUDENTS, "");
         values.put(COLUMN_REJECTED_STUDENTS, "");
+        values.put(COLUMN_CANCELLED_STUDENTS, "");
+
 
         db.insert(TABLE_SESSIONS, null, values);
         db.close();
@@ -924,29 +931,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void rate(String tutorUsername, int r){
+    public void rate(String studentUsername, String tutorUsername, int r){
         if (r < 1 || r > 5){return;}
 
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_RATING},
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_RATING, COLUMN_RATED},
                 COLUMN_USERNAME + "=? AND " + COLUMN_ROLE + "='Tutor'" ,
                 new String[]{tutorUsername}, null, null, null);
 
-        String s = "";
+        String ratingString = "";
+        String ratedString = "";
 
-        if (cursor.moveToFirst()){
-            s = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+        if (cursor.moveToFirst()) {
+            ratingString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+            ratedString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATED));
+
+            if (ratingString == null) ratingString = "";
+            if (ratedString == null) ratedString = "";
         }
 
-        List<String> l = stringToList(s);
-        l.add(r+"");
+        List<String> ratingList = stringToList(ratingString);
+        List<String> ratedList = stringToList(ratedString);
 
-        String temp = listToString(l);
+        if (ratedList.contains(studentUsername)) {
+            db.close();
+            return;
+        }
+
+        //add student to COLUMN_Rated
+        ratingList.add(String.valueOf(r));
+        ratedList.add(studentUsername);
 
         ContentValues values = new ContentValues();
-        values.put(COLUMN_RATING, temp);
+        values.put(COLUMN_RATING, listToString(ratingList));
+        values.put(COLUMN_RATED, listToString(ratedList));
 
         db.update(
                 TABLE_USERS, values,
@@ -966,32 +986,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String s = "";
 
-        double rating = 0;
-
         if (cursor.moveToFirst()){
             s = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+            if (s == null) s = "";
         }
+
+        db.close();
+        cursor.close();
 
         if (s.isEmpty()){
             return 0;
         }
 
         List<String> l = stringToList(s);
-        int[] allRatings = new int[l.size()];
+        double sum = 0;
 
-        for (int i = 0; i < l.size(); i++){
-            allRatings[i] = Integer.parseInt(l.get(i));
+        for (String r: l){
+            sum = sum + Integer.parseInt(r);
         }
 
-        for (int i:allRatings){
-            rating = rating+i;
-        }
-
-        db.close();
-        cursor.close();
 
 
-        return rating/allRatings.length;
+        return sum/l.size();
     }
 
 
@@ -1003,11 +1019,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String s = "";
 
-        double rating = 0;
-
         if (cursor.moveToFirst()){
             s = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+            if (s == null) s = "";
         }
+
+        db.close();
+        cursor.close();
+
 
         if (s.isEmpty()){
             return 0;
@@ -1015,12 +1034,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         List<String> l = stringToList(s);
 
-        db.close();
-        cursor.close();
-
         return l.size();
     }
 
+    public boolean studentFinishedSession(String studentUserName, String tutorUsername, String currentDay, String currentTime){//returns true is student has an approved and past session from a tutor
+        List<Sessions> allStudentSessions = studentSessions(studentUserName, "Approved");
+        List<Sessions> matchingTutorSessions = new ArrayList<>();
+        for (Sessions s: allStudentSessions){
+            if(s.getTutorUsername().equals(tutorUsername)){
+                if( true)//sessionPast()){
+                    return true;
+                }
+            }
+        return false;
+        }
+
+
+
+
+    public boolean hasStudentRated(String studentUsername, String tutorUsername){//gives true is a student has rated a tutor
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_RATED},
+                COLUMN_USERNAME + "=? AND " + COLUMN_ROLE + "='Tutor'",
+                new String[]{tutorUsername}, null, null, null);
+
+        String ratedString = "";
+
+        if (cursor.moveToFirst()) {
+            ratedString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATED));
+            if (ratedString == null) ratedString = "";
+        }
+
+        List<String> ratedList = stringToList(ratedString);
+        cursor.close();
+        db.close();
+        return ratedList.contains(studentUsername);
     }
+
+
+
+}
+
+
 
 
