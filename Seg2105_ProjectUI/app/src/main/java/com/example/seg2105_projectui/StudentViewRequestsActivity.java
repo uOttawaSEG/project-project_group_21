@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -55,6 +56,8 @@ public class StudentViewRequestsActivity extends AppCompatActivity {
         allSessions.addAll(rejectedDates);
         allSessions.addAll(pendingDates);
 
+        checkForRequests(allSessions); //will send you back to menu if student has no tests
+
         sortByDates(allSessions); //creates a large list of all possible sessions and arranges them
 
         //FOR PLACING INTO THE LIST VIEW
@@ -89,5 +92,16 @@ public class StudentViewRequestsActivity extends AppCompatActivity {
                 return dateCompare;
             }
         });
+    }
+
+    private void checkForRequests(ArrayList<Sessions> dates){
+        if (dates.isEmpty()){
+            Toast.makeText(this, "You have not requested any sessions. Returning to menu.", Toast.LENGTH_SHORT).show();
+
+            Intent intent2 = new Intent(StudentViewRequestsActivity.this, TutorViewPending.class);
+            intent2.putExtra("username", studentUsername);
+            startActivity(intent2);
+            finish();
+        }
     }
 }
