@@ -536,7 +536,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     new String[]{tutorUsername, date, startTime});
 
         }
-
+        updateSessionStatus(db, tutorUsername, date, startTime);
         cursor.close();
         db.close();
     }
@@ -566,7 +566,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     new String[]{tutorUsername, date, startTime});
 
         }
-
+        updateSessionStatus(db, tutorUsername, date, startTime);
         cursor.close();
         db.close();
     }
@@ -1070,6 +1070,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return ratedList.contains(studentUsername);
+    }
+
+    void updateSessionStatus(SQLiteDatabase db, String tutorUsername, String date, String startTime) {//only for use in db to fix my mistakes
+        Cursor cursor = db.query(TABLE_SESSIONS,
+                new String[]{COLUMN_APPROVED_STUDENTS},
+                COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                new String[]{tutorUsername, date, startTime},
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            List<String> approved = stringToList(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS)));
+
+            ContentValues values = new ContentValues();
+
+            if (approved.isEmpty()) {
+                values.put(COLUMN_STATUS, "Pending");
+            } else {
+                values.put(COLUMN_STATUS, "Approved");
+            }
+
+            db.update(TABLE_SESSIONS,
+                    values,
+                    COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                    new String[]{tutorUsername, date, startTime});
+        }
+
+        cursor.close();
     }
 
 
