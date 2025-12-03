@@ -181,7 +181,7 @@ public class StudentSessionSearchActivity extends AppCompatActivity {
         newEndTimeInt += timeCalc;
 
         //REPLACE WITH DATABASE METHOD TO GET ALL SESSIONS, BOTH REQUESTED AND ACCEPTED
-        List<Sessions> studentRequestedSessions = dbHelper.studentSessions(loggedInStudent, "Accepting");
+        List<Sessions> studentRequestedSessions = dbHelper.studentSessions(loggedInStudent, "Approved");
 
         for (Sessions existingSession : studentRequestedSessions) {
             if (existingSession.date.equals(courseSessions.get(currentSessionIndex).date)) {
