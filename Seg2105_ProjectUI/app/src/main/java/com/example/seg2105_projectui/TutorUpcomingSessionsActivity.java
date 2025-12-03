@@ -97,8 +97,14 @@ public class TutorUpcomingSessionsActivity extends AppCompatActivity {
 
         cancelButton.setOnClickListener(v ->{
             Sessions s = upcomingSessions.get(sessionIndex);
-            cancelSession(s);
+            if(s.getStatus().equals("Approved") ){
+                Toast.makeText(this, "Cannot Delete an Approved Session", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                cancelSession(s);
+            }
         });
+
     }
 
     private void cancelSession(Sessions s){
