@@ -11,8 +11,9 @@
         android:layout_height="45dp"
         android:hint="Enter your Rating out of 5"
         android:inputType="number"
-        tools:layout_editor_absoluteX="33dp"
-        tools:layout_editor_absoluteY="460dp" />
+        app:layout_constraintBottom_toTopOf="@+id/button_update_rating"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:layout_editor_absoluteX="33dp" />
 
     <Button
         android:id="@+id/button_back"

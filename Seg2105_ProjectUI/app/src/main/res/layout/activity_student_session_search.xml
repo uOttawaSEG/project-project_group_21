@@ -5,17 +5,62 @@
     android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/display_tutor"
-        android:layout_width="369dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="288dp"
-        android:text="Tutor: [Tutor]"
-        android:textSize="20sp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="382dp"
+        android:layout_height="wrap_content"
+        android:background="#16000000"
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_request"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.38"
+        app:layout_constraintHorizontal_bias="0.551"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/button_search_sessions"
+        app:layout_constraintVertical_bias="0.438"
+        app:layout_wrapBehaviorInParent="vertical_only">
+
+        <TextView
+            android:id="@+id/display_course"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Course: [course]"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/display_tutor_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tutor: [tutor username]"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/display_rating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rating: [rating]"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/display_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date: [date]"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/display_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Starting Time: [time]"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_next_session"
@@ -43,39 +88,15 @@
         android:id="@+id/button_request"
         android:layout_width="366dp"
         android:layout_height="45dp"
-        android:layout_marginTop="464dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="472dp"
         android:backgroundTint="#000000"
         android:text="Request Session"
-        app:layout_constraintBottom_toTopOf="@+id/buttonBackToSelection3"
+        app:layout_constraintBottom_toTopOf="@+id/button_back_from_search"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.577"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/display_rating"
-        android:layout_width="369dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="340dp"
-        android:text="Rating: [Rating]"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.38"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/display_starttime"
-        android:layout_width="369dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="396dp"
-        android:text="Start Time: [Start Time]"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.38"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/button_search_sessions"
@@ -102,10 +123,10 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/text_coursesearch"
+        android:id="@+id/edit_coursesearch"
         android:layout_width="369dp"
         android:layout_height="40dp"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="100dp"
         android:layout_marginBottom="64dp"
         android:ems="10"
         android:hint="Enter a Course Code to Search"

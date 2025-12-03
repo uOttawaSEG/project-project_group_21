@@ -54,14 +54,14 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
         // Set up button actions
         setupButtonClickListeners();
 
-        updateDisplay();
+        loadSessionsFromDatabase();
+        //updateDisplay();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadSessionsFromDatabase();
     }
 
 
@@ -80,15 +80,15 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
 
 
     private void loadSessionsFromDatabase() {
-        if (!getPassedSessions(loggedInStudent).isEmpty()){
+        //if (!getPassedSessions(loggedInStudent).isEmpty()){
             passedSessions = getPassedSessions(loggedInStudent);
             if (passedSessions == null || passedSessions.isEmpty()) {
                 currentSessionIndex = -1;
             } else if (currentSessionIndex >= passedSessions.size()) {
                 currentSessionIndex = passedSessions.size() - 1;
             }
-        }
-        updateDisplay();
+        //}
+        //updateDisplay();
     }
 
     private void setupButtonClickListeners() {
@@ -174,7 +174,7 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
     }
 
     private List<Sessions> getPassedSessions(String studentName){
-        List<Sessions> allSessions = dbHelper.studentSessions(studentName, "Approved");
+        List<Sessions> allSessions = dbHelper.studentSessions(studentName, "Accepting");
         List<Sessions> passedSessions = null;
 
         for (int i = 0; i < allSessions.size(); i++){
