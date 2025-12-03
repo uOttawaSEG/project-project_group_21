@@ -108,13 +108,18 @@ public class TutorManageSessionsActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(v -> {
             if (currentSessionIndex != -1 && !tutorSessions.isEmpty()) {
                 Sessions sessionToDelete = tutorSessions.get(currentSessionIndex);
-                dbHelper.deleteSession(sessionToDelete);
-                loadSessionsFromDatabase();
-                updateDisplay();
-                //Toast.makeText(this, "Delete not implemented in DatabaseHelper.", Toast.LENGTH_SHORT).show(); //should be added
-                Toast.makeText(this, "Availability Deleted!", Toast.LENGTH_SHORT).show();
-
-            } else {
+                if(sessionToDelete.getStatus().equals("Approved") ){
+                    Toast.makeText(this, "Cannot Delete an Approved Session", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    dbHelper.deleteSession(sessionToDelete);
+                    loadSessionsFromDatabase();
+                    updateDisplay();
+                    //Toast.makeText(this, "Delete not implemented in DatabaseHelper.", Toast.LENGTH_SHORT).show(); //should be added
+                    Toast.makeText(this, "Availability Deleted!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
                 Toast.makeText(this, "No availability to delete.", Toast.LENGTH_SHORT).show();
             }
         });

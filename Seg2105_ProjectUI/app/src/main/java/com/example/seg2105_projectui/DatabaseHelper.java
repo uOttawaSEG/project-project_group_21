@@ -963,40 +963,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Sessions> studentSessions (String studentUserName, String status) {//retunrs all sessions for given student and status
+    public List<Sessions> studentSessions (String studentUserName, String status) {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Sessions> sessions = new ArrayList<>();
 
         Cursor cursor = db.query(TABLE_SESSIONS, null,
                 COLUMN_STATUS + "=?",
-                new String[]{status}, null, null, null);//should sort sessions by tutorname and starttime??
+                new String[]{status}, null, null, null);
 
         if (cursor.moveToFirst()) {
             do {
-                String approved = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPROVED_STUDENTS));
-                List<String> approvedList = stringToList(approved);
-
-                for (int i = 0; i<approvedList.size(); i++){
-                    if (approvedList.get(i).equals(studentUserName)){
-                        String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
-                        String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
-                        String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
-                        String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
-
-                        sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
-                    }
+                String columnToCheck;
+                if (status.equalsIgnoreCase("Pending")) {
+                    columnToCheck = COLUMN_PENDING_STUDENTS;
+                } else {
+                    columnToCheck = COLUMN_APPROVED_STUDENTS;
                 }
 
+                // Retrieve the list of students from the correct column
+                String studentListStr = cursor.getString(cursor.getColumnIndexOrThrow(columnToCheck));
+                List<String> studentList = stringToList(studentListStr);
+
+                // Check if the specific student is in that list
+                if (studentList.contains(studentUserName)) {
+                    String tutorUsername = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TUTOR_USERNAME));
+                    String startTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_START_TIME));
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                    String course = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COURSE));
+
+                    sessions.add(new Sessions(tutorUsername, date, startTime, course, status));
+                }
 
             } while (cursor.moveToNext());
-
         }
 
         cursor.close();
         db.close();
         return sessions;
-
     }
+
 
 
     public void rate(String studentUsername, String tutorUsername, int r){
