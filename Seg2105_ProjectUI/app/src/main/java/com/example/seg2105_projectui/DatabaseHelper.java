@@ -89,7 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ROLE + " TEXT NOT NULL,"
                 + COLUMN_DEGREE + " TEXT,"
                 + COLUMN_COURSES + " TEXT,"
-                + COLUMN_RATING + " INTEGER,"
+                + COLUMN_RATING + " TEXT,"
                 + COLUMN_RATED + " TEXT,"
                 + COLUMN_PROGRAM + " TEXT,"
                 + COLUMN_ACCOUNT_STATUS + " INTEGER DEFAULT 0" + ")";
@@ -490,21 +490,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
                 new String[]{tutorUsername, date, startTime}, null, null, null);
 
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             String pending = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PENDING_STUDENTS));
             List<String> pendingList = stringToList(pending);
 
 
             if (!pendingList.contains(studentUsername)) {//best to not have duplicates //because that would make removal annoying
                 pendingList.add(studentUsername);
+
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));
+                db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
+                        new String[]{tutorUsername, date, startTime});
             }
-
-
-            ContentValues values = new ContentValues();
-            values.put(COLUMN_PENDING_STUDENTS, listToString(pendingList));
-            db.update(TABLE_SESSIONS, values, COLUMN_TUTOR_USERNAME + "=? AND " + COLUMN_DATE + "=? AND " + COLUMN_START_TIME + "=?",
-                    new String[]{tutorUsername, date, startTime});
-
         }
 
         cursor.close();
@@ -771,10 +769,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             List<String> temp = stringToList(programString);
             String[] programList = temp.toArray(new String[0]);
 
-            String accountStatus = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ACCOUNT_STATUS));
-
-
-            tutor = new Tutor( tutorUsername, password, lastName, firstName, phone, role, degree, programList, Integer.parseInt(accountStatus));
+            tutor = new Tutor( tutorUsername, password, lastName, firstName, phone, role, degree, programList);
         }
         cursor.close();
         db.close();
@@ -903,7 +898,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    public List<Sessions> searchSession(String course) {//retunrs all avalible (pending/without approved students yet) sessions given course Code
+    public List<Sessions> searchAvailableSessions(String course) {//retunrs all avalible (pending/without approved students yet) sessions given course Code
         SQLiteDatabase db = this.getReadableDatabase();
         List<Sessions> sessions = new ArrayList<>();
 
@@ -963,18 +958,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Sessions> studentSessions (String studentUserName, String status) {
+    public List<Sessions> studentSessions (String studentUserName, String status) {//returns all sessions a student has given status
         SQLiteDatabase db = this.getReadableDatabase();
         List<Sessions> sessions = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_SESSIONS, null,
-                COLUMN_STATUS + "=?",
-                new String[]{status}, null, null, null);
+        Cursor cursor = db.query(TABLE_SESSIONS, null, null, null, null, null, null);
 
         if (cursor.moveToFirst()) {
             do {
                 String columnToCheck;
-                if (status.equalsIgnoreCase("Pending")) {
+                if ("Pending".equalsIgnoreCase(status)) {
                     columnToCheck = COLUMN_PENDING_STUDENTS;
                 } else {
                     columnToCheck = COLUMN_APPROVED_STUDENTS;
@@ -1009,46 +1002,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = null;
 
-        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_RATING, COLUMN_RATED},
-                COLUMN_USERNAME + "=? AND " + COLUMN_ROLE + "='Tutor'" ,
-                new String[]{tutorUsername}, null, null, null);
+        try {
+            cursor = db.query(TABLE_USERS, new String[]{COLUMN_RATING, COLUMN_RATED},
+                    COLUMN_USERNAME + "=? AND " + COLUMN_ROLE + "='Tutor'",
+                    new String[]{tutorUsername}, null, null, null);
 
-        String ratingString = "";
-        String ratedString = "";
+            String ratingString = "";
+            String ratedString = "";
 
-        if (cursor.moveToFirst()) {
-            ratingString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
-            ratedString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATED));
+            if (cursor.moveToFirst()) {
+                ratingString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATING));
+                ratedString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATED));
 
-            if (ratingString == null) ratingString = "";
-            if (ratedString == null) ratedString = "";
-        }
+                if (ratingString == null) ratingString = "";
+                if (ratedString == null) ratedString = "";
+            }
 
-        List<String> ratingList = stringToList(ratingString);
-        List<String> ratedList = stringToList(ratedString);
+            List<String> ratingList = stringToList(ratingString);
+            List<String> ratedList = stringToList(ratedString);
 
-        if (ratedList.contains(studentUsername)) {
+            if (ratedList.contains(studentUsername)) {return;}
+
+            ratingList.add(String.valueOf(r));
+            ratedList.add(studentUsername);
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_RATING, listToString(ratingList));
+            values.put(COLUMN_RATED, listToString(ratedList));
+
+            db.update(
+                    TABLE_USERS, values,
+                    COLUMN_USERNAME + "=?",
+                    new String[]{tutorUsername});
+
+        } finally {
+            if (cursor != null) cursor.close();
             db.close();
-            return;
         }
-
-        //add student to COLUMN_Rated
-        ratingList.add(String.valueOf(r));
-        ratedList.add(studentUsername);
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_RATING, listToString(ratingList));
-        values.put(COLUMN_RATED, listToString(ratedList));
-
-        db.update(
-                TABLE_USERS, values,
-                COLUMN_USERNAME + "=?",
-                new String[]{tutorUsername});
-
-        db.close();
-        cursor.close();
-
     }
 
     public double getRating(String tutorUsername){//returns 0 if no ratings yet
@@ -1132,9 +1124,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String ratedString = "";
 
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             ratedString = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RATED));
             if (ratedString == null) ratedString = "";
+
         }
 
         List<String> ratedList = stringToList(ratedString);
