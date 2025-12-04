@@ -82,6 +82,11 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
 
 
     private void loadSessionsFromDatabase() {
+        //Showcasing
+        dbHelper.createSession("tutortest", "2025-10-10", "12:00", "OldSEG2105", "Pending");
+        dbHelper.studentPending("tutortest", "2025-10-10","12:00","studenttest");
+        dbHelper.approveStudent("tutortest", "2025-10-10", "12:00", "studenttest");
+
             getPassedSessions(loggedInStudent);
             if (passedSessions == null || passedSessions.isEmpty()) {
                 currentSessionIndex = -1;
@@ -89,6 +94,8 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
                 currentSessionIndex = passedSessions.size() - 1;
             }
             updateDisplay();
+
+
     }
 
     private void setupButtonClickListeners() {
@@ -158,7 +165,7 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
             }
             Sessions currentSession = passedSessions.get(currentSessionIndex);
 
-            displayTutorName.setText("Tutor: " + currentSession.tutorUsername);
+            displayTutorName.setText("Tutor: " + dbHelper.getTutor(currentSession.tutorUsername).getFirstName() + " " + dbHelper.getTutor(currentSession.tutorUsername).getLastName());
             displayDate.setText("Date: " + currentSession.date);
             displayStartTime.setText("Start Time: " + currentSession.startTime);
             displayCourse.setText("Course: " + currentSession.course);

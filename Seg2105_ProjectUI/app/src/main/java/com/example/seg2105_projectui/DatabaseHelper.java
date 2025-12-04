@@ -1072,7 +1072,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-        return sum/l.size();
+        return sum/(l.size()-1);
     }
 
 
