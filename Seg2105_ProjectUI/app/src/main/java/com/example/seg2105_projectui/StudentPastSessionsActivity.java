@@ -23,7 +23,7 @@ import kotlin.text.UStringsKt;
 public class StudentPastSessionsActivity extends AppCompatActivity {
 
     private int currentSessionIndex;
-    private List<Sessions> passedSessions = new ArrayList<>();
+    private List<Sessions> passedSessions;
     private DatabaseHelper dbHelper;
 
     private TextView displayTutorName, displayDate, displayStartTime, displayCourse, displayYourRating;
@@ -48,13 +48,13 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
             return;
         }
 
+        passedSessions = new ArrayList<Sessions>();
 
         // Initialize UI components
         initializeViews();
 
         // Set up button actions
         setupButtonClickListeners();
-
         loadSessionsFromDatabase();
 
     }
@@ -72,7 +72,7 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
         displayDate = findViewById(R.id.display_date);
         displayStartTime = findViewById(R.id.display_time);
         displayCourse = findViewById(R.id.display_course);
-        displayYourRating = findViewById(R.id.display_rating);
+        displayYourRating = findViewById(R.id.display_tutor_rating);
         editYourRating = findViewById(R.id.editRating);
         submitRatingButton = findViewById(R.id.button_update_rating);
         prevButton = findViewById(R.id.button_prev);
@@ -88,7 +88,7 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
             } else if (currentSessionIndex >= passedSessions.size()) {
                 currentSessionIndex = passedSessions.size() - 1;
             }
-        //updateDisplay();
+            updateDisplay();
     }
 
     private void setupButtonClickListeners() {
@@ -159,13 +159,12 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
             Sessions currentSession = passedSessions.get(currentSessionIndex);
 
             displayTutorName.setText("Tutor: " + currentSession.tutorUsername);
-            displayDate.setText("Tutor: " + currentSession.date);
-            displayStartTime.setText("Tutor: " + currentSession.startTime);
+            displayDate.setText("Date: " + currentSession.date);
+            displayStartTime.setText("Start Time: " + currentSession.startTime);
             displayCourse.setText("Course: " + currentSession.course);
             displayYourRating.setText("");
 
         }
-
 
         boolean hasSessions = passedSessions != null && !passedSessions.isEmpty();
         prevButton.setEnabled(hasSessions && currentSessionIndex > 0);
@@ -175,8 +174,6 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
 
     private void getPassedSessions(String studentName){
         List<Sessions> allSessions = dbHelper.studentSessions(studentName,"Accepted");
-
-
         for (int i = 0; i < allSessions.size(); i++){
             if (hasSessionPast(allSessions.get(i))){
                 passedSessions.add(allSessions.get(i));
