@@ -180,9 +180,27 @@ public class StudentSessionSearchActivity extends AppCompatActivity {
         }
         newEndTimeInt += timeCalc;
 
-        //REPLACE WITH DATABASE METHOD TO GET ALL SESSIONS, BOTH REQUESTED AND ACCEPTED
         List<Sessions> studentRequestedSessions = dbHelper.studentSessions(loggedInStudent, "Approved");
 
+        for (Sessions existingSession : studentRequestedSessions) {
+            if (existingSession.date.equals(courseSessions.get(currentSessionIndex).date)) {
+                int existingStartTimeInt = Integer.parseInt(existingSession.startTime.replace(":", ""));
+
+                timeCalc = existingStartTimeInt%100;
+                int existingEndTimeInt = existingStartTimeInt - timeCalc; //gets just the hours
+                timeCalc += 29; //add 29 min so the final hour can overlap allowing b2b sessions
+                if (timeCalc >= 60){
+                    timeCalc += 40; //If it's an hour add 100, then remove 60: 100-60 --> +40
+                }
+                existingEndTimeInt += timeCalc;
+
+                if (newStartTimeInt < existingEndTimeInt && newEndTimeInt > existingStartTimeInt) {
+                    return true; // Overlap detected
+                }
+            }
+        }
+
+        studentRequestedSessions = dbHelper.studentSessions(loggedInStudent, "Pending");
         for (Sessions existingSession : studentRequestedSessions) {
             if (existingSession.date.equals(courseSessions.get(currentSessionIndex).date)) {
                 int existingStartTimeInt = Integer.parseInt(existingSession.startTime.replace(":", ""));

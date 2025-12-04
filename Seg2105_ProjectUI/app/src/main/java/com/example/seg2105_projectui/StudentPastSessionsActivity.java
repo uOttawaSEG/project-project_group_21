@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.ParseException;
 import java.time.LocalTime;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +23,7 @@ import kotlin.text.UStringsKt;
 public class StudentPastSessionsActivity extends AppCompatActivity {
 
     private int currentSessionIndex;
-    private List<Sessions> passedSessions;
+    private List<Sessions> passedSessions = new ArrayList<>();
     private DatabaseHelper dbHelper;
 
     private TextView displayTutorName, displayDate, displayStartTime, displayCourse, displayYourRating;
@@ -55,8 +56,9 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
         setupButtonClickListeners();
 
         loadSessionsFromDatabase();
-        //updateDisplay();
+
     }
+
 
 
     @Override
@@ -80,14 +82,12 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
 
 
     private void loadSessionsFromDatabase() {
-        //if (!getPassedSessions(loggedInStudent).isEmpty()){
-            passedSessions = getPassedSessions(loggedInStudent);
+            getPassedSessions(loggedInStudent);
             if (passedSessions == null || passedSessions.isEmpty()) {
                 currentSessionIndex = -1;
             } else if (currentSessionIndex >= passedSessions.size()) {
                 currentSessionIndex = passedSessions.size() - 1;
             }
-        //}
         //updateDisplay();
     }
 
@@ -126,7 +126,7 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
             }
             intRating = Integer.parseInt(rating);
             if (intRating > 0 && intRating < 6){
-                //rate(loggedInStudent, passedSessions.get(currentSessionIndex).tutorUsername,intRating);
+                dbHelper.rate(loggedInStudent, passedSessions.get(currentSessionIndex).tutorUsername,intRating);
                 Toast.makeText(this, "Tutor Rated!", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Please enter a numerical rating value between 1 and 5.", Toast.LENGTH_SHORT).show();
@@ -173,16 +173,15 @@ public class StudentPastSessionsActivity extends AppCompatActivity {
         submitRatingButton.setEnabled(hasSessions);
     }
 
-    private List<Sessions> getPassedSessions(String studentName){
-        List<Sessions> allSessions = dbHelper.studentSessions(studentName, "Accepting");
-        List<Sessions> passedSessions = null;
+    private void getPassedSessions(String studentName){
+        List<Sessions> allSessions = dbHelper.studentSessions(studentName,"Accepted");
+
 
         for (int i = 0; i < allSessions.size(); i++){
             if (hasSessionPast(allSessions.get(i))){
                 passedSessions.add(allSessions.get(i));
             }
         }
-        return passedSessions;
     }
 
     public static boolean hasSessionPast(Sessions session) {
